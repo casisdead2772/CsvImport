@@ -7,7 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Product
  *
- * @ORM\Table(name="tblProductData", uniqueConstraints={@ORM\UniqueConstraint(name="strProductCode", columns={"strProductCode"})})
+ * @ORM\Table(name="tblProductData",
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="strProductCode", columns={"strProductCode"})})
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  */
@@ -78,8 +79,7 @@ class Product
     /**
      * @return int
      */
-    public function getId(): int
-    {
+    public function getId(): int {
         return $this->id;
     }
 
@@ -87,130 +87,112 @@ class Product
     /**
      * @return string
      */
-    public function getName(): string
-    {
+    public function getName(): string {
         return $this->name;
     }
 
     /**
      * @param string $name
      */
-    public function setName(string $name): void
-    {
+    public function setName(string $name): void {
         $this->name = $name;
     }
 
     /**
      * @return string
      */
-    public function getDescription(): string
-    {
+    public function getDescription(): string {
         return $this->description;
     }
 
     /**
      * @param string $description
      */
-    public function setDescription(string $description): void
-    {
+    public function setDescription(string $description): void {
         $this->description = $description;
     }
 
     /**
      * @return string
      */
-    public function getCode(): string
-    {
+    public function getCode(): string {
         return $this->code;
     }
 
     /**
      * @param string $code
      */
-    public function setCode(string $code): void
-    {
+    public function setCode(string $code): void {
         $this->code = $code;
     }
 
     /**
      * @return \DateTime|null
      */
-    public function getAdded(): ?\DateTime
-    {
+    public function getAdded(): ?\DateTime {
         return $this->added;
     }
 
     /**
      * @ORM\PrePersist
      */
-    public function setAdded(): void
-    {
+    public function setAdded(): void {
         $this->added = new \DateTime('now');
     }
 
     /**
      * @return \DateTime|null
      */
-    public function getDiscontinued(): ?\DateTime
-    {
+    public function getDiscontinued(): ?\DateTime {
         return $this->discontinued;
     }
 
     /**
      * @param \DateTime|null $discontinued
      */
-    public function setDiscontinued(?\DateTime $discontinued): void
-    {
+    public function setDiscontinued(?\DateTime $discontinued): void {
         $this->discontinued = $discontinued;
     }
 
     /**
      * @return \DateTime
      */
-    public function getTimestamp(): \DateTime
-    {
+    public function getTimestamp(): \DateTime {
         return $this->timestamp;
     }
 
     /**
      * @ORM\PreUpdate()
      */
-    public function setTimestamp(): void
-    {
+    public function setTimestamp(): void {
         $this->timestamp = new \DateTime('now');
     }
 
     /**
      * @return int
      */
-    public function getStock(): int
-    {
+    public function getStock(): int {
         return $this->stock;
     }
 
     /**
      * @param int $stock
      */
-    public function setStock(int $stock): void
-    {
+    public function setStock(int $stock): void {
         $this->stock = $stock;
     }
 
     /**
      * @return int
      */
-    public function getCost(): int
-    {
+    public function getCost(): int {
         return $this->cost;
     }
 
     /**
      * @param int $cost
      */
-    public function setCost(int $cost): void
-    {
+    public function setCost(int $cost): void {
         $this->cost = $cost;
     }
-
-
 }

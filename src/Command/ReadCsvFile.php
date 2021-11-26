@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-
 use App\Service\ProductService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -15,19 +14,30 @@ use Symfony\Component\Serializer\Serializer;
 
 class ReadCsvFile extends Command
 {
+    /**
+     * @var string The default command name, override in parent
+     */
     public static $defaultName = 'app:import';
-    protected ProductService $productService;
+    /**
+     * @var string
+     */
     public string $projectDir;
+    /**
+     * @var ProductService
+     */
+    protected ProductService $productService;
 
-    public function __construct($projectDir, ProductService $productService)
-    {
+    /**
+     * @param $projectDir
+     * @param ProductService $productService
+     */
+    public function __construct($projectDir, ProductService $productService){
         $this->projectDir = $projectDir;
         $this->productService = $productService;
         parent::__construct();
     }
 
-    protected function configure()
-    {
+    protected function configure(){
         $this->setDescription('Read CSV file')
             ->addArgument('test', InputArgument::OPTIONAL, 'Test execute', false);
     }
@@ -37,8 +47,7 @@ class ReadCsvFile extends Command
      * @param OutputInterface $output
      * @return int
      */
-    public function execute(InputInterface $input, OutputInterface $output): int
-    {
+    public function execute(InputInterface $input, OutputInterface $output): int {
         //Get argument
         $processPermission = $input->getArgument('test');
 
@@ -95,8 +104,7 @@ class ReadCsvFile extends Command
         return Command::SUCCESS;
     }
 
-    public function getCsvRowsAsArrays($inputFile)
-    {
+    public function getCsvRowsAsArrays($inputFile){
         //
         if(!file_exists($inputFile)){
             exit("File $inputFile not exists");
@@ -108,17 +116,17 @@ class ReadCsvFile extends Command
         $rows = $decoder->decode(file_get_contents($inputFile), 'csv');
 
         //check headers
-        $headers = array_keys($rows[0]);
         if(
-            $headers[0] !== 'Product Code'
-            || $headers[1] !== 'Product Name'
-            || $headers[2] !== 'Product Description'
-            || $headers[3] !== 'Stock'
-            || $headers[4] !== 'Cost in GBP'
-            || $headers[5] !== 'Discontinued'
+            !array_key_exists('Product Code',$rows[0])
+            || !array_key_exists('Product Name',$rows[0])
+            || !array_key_exists('Product Description',$rows[0])
+            || !array_key_exists('Stock',$rows[0])
+            || !array_key_exists('Cost in GBP',$rows[0])
+            || !array_key_exists('Discontinued',$rows[0])
         ){
             exit('File headers do not match expected');
         }
+
         return $rows;
     }
 

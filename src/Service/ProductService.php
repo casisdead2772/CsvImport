@@ -7,10 +7,15 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ProductService
 {
+    /**
+     * @var EntityManagerInterface
+     */
     protected EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
-    {
+    /**
+     * @param EntityManagerInterface $entityManager
+     */
+    public function __construct(EntityManagerInterface $entityManager){
         $this->entityManager = $entityManager;
     }
 
@@ -18,8 +23,7 @@ class ProductService
      * @param array $product
      * @param Product $selectedProduct
      */
-    public function updateOrCreateProduct(array $product, Product $selectedProduct)
-    {
+    public function updateOrCreateProduct(array $product, Product $selectedProduct){
         $selectedProduct->setName($product['Product Name']);
         $selectedProduct->setCode($product['Product Code']);
         $selectedProduct->setDescription($product['Product Description']);
@@ -30,11 +34,12 @@ class ProductService
         }
         $this->entityManager->persist($selectedProduct);
         $this->entityManager->flush();
-
     }
 
-    public function checkExistingProduct($product)
-    {
+    /**
+     * @param $product
+     */
+    public function checkExistingProduct($product){
         $productRepository = $this->entityManager->getRepository(Product::class);
         $selectedProductObject = $productRepository->findOneBy(['code' => $product['Product Code']]);
         if (!$selectedProductObject){
@@ -42,5 +47,4 @@ class ProductService
         }
         $this->updateOrCreateProduct($product, $selectedProductObject);
     }
-
 }
