@@ -5,6 +5,7 @@ $finder = PhpCsFixer\Finder::create()
 ;
 
 $config = new PhpCsFixer\Config();
+
 return $config->setRules([
     '@PSR12' => true,
     'array_syntax' => ['syntax' => 'short'],
@@ -18,7 +19,9 @@ return $config->setRules([
         'try',
         'if',
         'foreach'
-    ]]
+    ]],
+    'phpdoc_add_missing_param_annotation' => ['only_untyped' => false],
+    'blank_line_after_namespace' => true,
 ])
     ->setFinder($finder)
     ;

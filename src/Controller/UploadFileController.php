@@ -28,6 +28,9 @@ class UploadFileController extends AbstractController {
 
     /**
      * @Route ("/upload_file", name="upload", methods={"POST"})
+     * @param Request $request
+     * @param FileUploadService $fileUploader
+     * @param KernelInterface $kernel
      */
     public function upload(Request $request, FileUploadService $fileUploader, KernelInterface $kernel) {
         $form = $this->createForm(UploadFormType::class);

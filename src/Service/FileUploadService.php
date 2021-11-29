@@ -7,8 +7,14 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class FileUploadService {
+    /**
+     * @var string
+     */
     public string $targetDirectory;
 
+    /**
+     * @var SluggerInterface
+     */
     private SluggerInterface $slugger;
 
     /**
@@ -22,6 +28,7 @@ class FileUploadService {
 
     /**
      * @param UploadedFile $file
+     *
      * @return string
      */
     public function upload(UploadedFile $file): string {
@@ -38,6 +45,9 @@ class FileUploadService {
         return $fileName;
     }
 
+    /**
+     * @return string
+     */
     public function getTargetDirectory(): string {
         return $this->targetDirectory;
     }

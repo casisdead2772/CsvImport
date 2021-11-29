@@ -18,12 +18,19 @@ class ReadCsvFile extends Command {
      */
     public static $defaultName = 'app:import';
 
+    /**
+     * @var string
+     */
     public string $targetDirectory;
 
+    /**
+     * @var ProductService
+     */
     protected ProductService $productService;
 
     /**
      * @param $targetDirectory
+     * @param ProductService $productService
      */
     public function __construct($targetDirectory, ProductService $productService) {
         $this->targetDirectory = $targetDirectory;
@@ -40,6 +47,7 @@ class ReadCsvFile extends Command {
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
+     *
      * @return int
      */
     public function execute(InputInterface $input, OutputInterface $output): int {
@@ -109,6 +117,11 @@ class ReadCsvFile extends Command {
         return Command::SUCCESS;
     }
 
+    /**
+     * @param $inputFile
+     *
+     * @return mixed|void
+     */
     public function getCsvRowsAsArrays($inputFile) {
         //
         if (!file_exists($inputFile)) {
