@@ -17,10 +17,12 @@ class ReadCsvFile extends Command {
      * @var string The default command name, override in parent
      */
     public static $defaultName = 'app:import';
+
     /**
      * @var string
      */
     public string $projectDir;
+
     /**
      * @var ProductService
      */
@@ -75,11 +77,12 @@ class ReadCsvFile extends Command {
                 continue;
             }
 
+            $costProduct = (int)((float)$product['Cost in GBP'] * 100);
             // money *100 for int
             $productImportRules = (
-                (int)$product['Stock'] < 10 && (int)((float)$product['Cost in GBP'] * 100) < 5 * 100
+                (int)$product['Stock'] < 10 && $costProduct < 5 * 100
             )
-                || (int)((float)$product['Cost in GBP'] * 100) > 1000 * 100;
+                || $costProduct > 1000 * 100;
 
             if ($productImportRules) {
                 $countMissingItems++;
