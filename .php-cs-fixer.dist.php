@@ -22,6 +22,7 @@ return $config->setRules([
     ]],
     'phpdoc_add_missing_param_annotation' => ['only_untyped' => false],
     'blank_line_after_namespace' => true,
+    'phpdoc_separation' => true
 ])
     ->setFinder($finder)
     ;
