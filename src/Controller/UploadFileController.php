@@ -22,7 +22,7 @@ class UploadFileController extends AbstractController {
 
         return $this->render('index.html.twig', [
             'controller_name' => 'UploadFileController',
-            'upload_form' => $form->createView(),
+            'upload_form' => $form->createView()
         ]);
     }
 
@@ -32,29 +32,29 @@ class UploadFileController extends AbstractController {
     public function upload(Request $request, FileUploadService $fileUploader, KernelInterface $kernel) {
         $form = $this->createForm(UploadFormType::class);
         $form->handleRequest($request);
-        $uploadedFile = $form['upload_file']->getData();
 
-        if ($uploadedFile) {
-            $uploadedFile = $fileUploader->upload($uploadedFile);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $uploadedFile = $form['upload_file']->getData();
+            $fileName = $fileUploader->upload($uploadedFile);
+            $application = new Application($kernel);
+            $application->setAutoExit(false);
+
+            $input = new ArrayInput([
+                    'command' => 'app:import',
+                    'filename' => $fileName,
+                ]);
+            $output = new BufferedOutput();
+
+            try {
+                $application->run($input, $output);
+                $this->addFlash('success', 'File imported!');
+            } catch (\Exception $e) {
+                return new Response($e->getMessage());
+            }
+        } else {
+            $this->addFlash('danger', (string)$form->getErrors(true, true));
         }
 
-        $application = new Application($kernel);
-        $application->setAutoExit(false);
-
-        $input = new ArrayInput([
-            'command' => 'app:import',
-            'filename' => $uploadedFile,
-        ]);
-        $output = new BufferedOutput();
-
-        try {
-            $application->run($input, $output);
-        } catch (\Exception $e) {
-            $errors = $e->getMessage();
-        }
-
-        $content = $output->fetch();
-
-        return new Response($content);
+        return $this->redirectToRoute('upload_file');
     }
 }

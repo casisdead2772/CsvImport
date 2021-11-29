@@ -134,5 +134,4 @@ class ReadCsvFile extends Command {
 
         return $rows;
     }
-
 }
