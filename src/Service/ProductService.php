@@ -6,19 +6,29 @@ use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ProductService {
+    /**
+     * @var EntityManagerInterface
+     */
     protected EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager) {
+    /**
+     * @param EntityManagerInterface $entityManager
+     */
+    public function __construct(EntityManagerInterface $entityManager){
         $this->entityManager = $entityManager;
     }
 
-    public function updateOrCreateProduct(array $product, Product $selectedProduct) {
+    /**
+     * @param array $product
+     * @param Product $selectedProduct
+     */
+    public function updateOrCreateProduct(array $product, Product $selectedProduct){
         $selectedProduct->setName($product['Product Name']);
         $selectedProduct->setCode($product['Product Code']);
         $selectedProduct->setDescription($product['Product Description']);
-        $selectedProduct->setStock((int) $product['Stock']);
-        $selectedProduct->setCost((int) ((float) $product['Cost in GBP'] * 100));
-        if ('yes' == $product['Discontinued']) {
+        $selectedProduct->setStock((int)$product['Stock']);
+        $selectedProduct->setCost((int)((float)$product['Cost in GBP'] * 100));
+        if($product['Discontinued'] == 'yes'){
             $selectedProduct->setDiscontinued(new \DateTime('now'));
         }
         $selectedProduct->setTimestamp();

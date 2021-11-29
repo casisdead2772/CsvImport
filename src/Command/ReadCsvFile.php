@@ -37,6 +37,11 @@ class ReadCsvFile extends Command {
             ->addArgument('test', InputArgument::OPTIONAL, 'Test execute', false);
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     */
     public function execute(InputInterface $input, OutputInterface $output): int {
         //Get argument
         $processPermission = $input->getArgument('test');
@@ -45,6 +50,7 @@ class ReadCsvFile extends Command {
         $productsArray = $this->getCsvRowsAsArrays($this->targetDirectory.'stock.csv');
         $countMissingItems = 0;
         $countSuccessItems = 0;
+
         $arrayIncorrectItems = [];
 
         //style for console
@@ -57,17 +63,23 @@ class ReadCsvFile extends Command {
                 && !empty($product['Product Code'])
                 && !empty($product['Product Name'])
                 && !empty($product['Product Description']);
+
             if (!$productValid) {
                 array_push($arrayIncorrectItems, $product);
+
                 continue;
             }
 
+            $costProduct = (int)((float)$product['Cost in GBP'] * 100);
             // money *100 for int
             $productImportRules = (
-                    (int) $product['Stock'] < 10 && (int) ((float) $product['Cost in GBP'] * 100) < 5 * 100)
-                || (int) ((float) $product['Cost in GBP'] * 100) > 1000 * 100;
+                (int)$product['Stock'] < 10 && $costProduct < 5 * 100
+            )
+                || $costProduct > 1000 * 100;
+
             if ($productImportRules) {
-                ++$countMissingItems;
+                $countMissingItems++;
+
                 continue;
             }
 
@@ -76,17 +88,20 @@ class ReadCsvFile extends Command {
                 if (!$processPermission) {
                     $this->productService->checkExistingProduct($product);
                 }
-                ++$countSuccessItems;
+
+                $countSuccessItems++;
             } catch (\Exception $exception) {
                 $io->warning($exception->getMessage());
+
                 break;
             }
         }
 
         //command ui
-        $io->success($countSuccessItems.' products was imported');
-        $io->warning($countMissingItems.' products was missing');
-        $io->getErrorStyle()->error('Incorrect products:');
+        $io->success($countSuccessItems. ' products was imported');
+        $io->warning($countMissingItems. ' products was missing');
+        $io->getErrorStyle()->error("Incorrect products:");
+
         foreach ($arrayIncorrectItems as $item) {
             $io->listing($item);
         }
@@ -94,12 +109,8 @@ class ReadCsvFile extends Command {
         return Command::SUCCESS;
     }
 
-    /**
-     * @param $inputFile
-     *
-     * @return mixed|void
-     */
     public function getCsvRowsAsArrays($inputFile) {
+        //
         if (!file_exists($inputFile)) {
             exit("File $inputFile not exists");
         }
@@ -123,4 +134,5 @@ class ReadCsvFile extends Command {
 
         return $rows;
     }
+
 }
