@@ -18,33 +18,33 @@ class ReadCsvFile extends Command {
      */
     public static $defaultName = 'app:import';
 
-    public string $projectDir;
+    public string $targetDirectory;
 
     protected ProductService $productService;
 
     /**
-     * @param $projectDir
+     * @param $targetDirectory
      */
-    public function __construct($projectDir, ProductService $productService) {
-        $this->projectDir = $projectDir;
+    public function __construct($targetDirectory, ProductService $productService) {
+        $this->targetDirectory = $targetDirectory;
         $this->productService = $productService;
         parent::__construct();
     }
 
     protected function configure() {
         $this->setDescription('Read CSV file')
+            ->addArgument('filename', InputArgument::REQUIRED, 'File name')
             ->addArgument('test', InputArgument::OPTIONAL, 'Test execute', false);
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int {
         //Get argument
         $processPermission = $input->getArgument('test');
+        $fileName = $input->getArgument('filename');
 
-        $productsArray = $this->getCsvRowsAsArrays($this->projectDir.'/storage/csvfiles/stock.csv');
-
+        $productsArray = $this->getCsvRowsAsArrays($this->targetDirectory.'stock.csv');
         $countMissingItems = 0;
         $countSuccessItems = 0;
-
         $arrayIncorrectItems = [];
 
         //style for console

@@ -21,6 +21,7 @@ class ProductService {
         if ('yes' == $product['Discontinued']) {
             $selectedProduct->setDiscontinued(new \DateTime('now'));
         }
+        $selectedProduct->setTimestamp();
         $this->entityManager->persist($selectedProduct);
         $this->entityManager->flush();
     }
