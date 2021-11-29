@@ -94,6 +94,11 @@ class ReadCsvFile extends Command {
         return Command::SUCCESS;
     }
 
+    /**
+     * @param $inputFile
+     *
+     * @return mixed|void
+     */
     public function getCsvRowsAsArrays($inputFile) {
         if (!file_exists($inputFile)) {
             exit("File $inputFile not exists");
