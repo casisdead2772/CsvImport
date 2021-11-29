@@ -31,7 +31,7 @@ class UploadFileController extends AbstractController {
     }
 
     /**
-     * @Route ("/upload_file", name="upload", methods={"POST"})
+     * @Route ("/", name="upload", methods={"POST"})
      *
      * @param Request $request
      * @param FileUploadService $fileUploader
