@@ -1,0 +1,144 @@
+<?php
+
+namespace App\Command;
+
+use App\Service\ProductService;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Serializer\Encoder\CsvEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
+
+class ReadCsvFile extends Command {
+    /**
+     * @var string The default command name, override in parent
+     */
+    public static $defaultName = 'app:import';
+
+    /**
+     * @var string
+     */
+    public string $projectDir;
+
+    /**
+     * @var ProductService
+     */
+    protected ProductService $productService;
+
+    /**
+     * @param $projectDir
+     * @param ProductService $productService
+     */
+    public function __construct($projectDir, ProductService $productService) {
+        $this->projectDir = $projectDir;
+        $this->productService = $productService;
+        parent::__construct();
+    }
+
+    protected function configure() {
+        $this->setDescription('Read CSV file')
+            ->addArgument('test', InputArgument::OPTIONAL, 'Test execute', false);
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return int
+     */
+    public function execute(InputInterface $input, OutputInterface $output): int {
+        //Get argument
+        $processPermission = $input->getArgument('test');
+
+        $productsArray = $this->getCsvRowsAsArrays($this->projectDir.'/storage/csvfiles/stock.csv');
+
+        $countMissingItems = 0;
+        $countSuccessItems = 0;
+
+        $arrayIncorrectItems = [];
+
+        //style for console
+        $io = new SymfonyStyle($input, $output);
+
+        foreach ($productsArray as $product) {
+            //validate fields
+            $productValid = is_numeric($product['Stock'])
+                && is_numeric($product['Cost in GBP'])
+                && !empty($product['Product Code'])
+                && !empty($product['Product Name'])
+                && !empty($product['Product Description']);
+
+            if (!$productValid) {
+                array_push($arrayIncorrectItems, $product);
+
+                continue;
+            }
+
+            $costProduct = (int)((float)$product['Cost in GBP'] * 100);
+            // money *100 for int
+            $productImportRules = (
+                (int)$product['Stock'] < 10 && $costProduct < 5 * 100
+            )
+                || $costProduct > 1000 * 100;
+
+            if ($productImportRules) {
+                $countMissingItems++;
+
+                continue;
+            }
+
+            try {
+                //if arg exists, no import to the db
+                if (!$processPermission) {
+                    $this->productService->checkExistingProduct($product);
+                }
+
+                $countSuccessItems++;
+            } catch (\Exception $exception) {
+                $io->warning($exception->getMessage());
+
+                break;
+            }
+        }
+
+        //command ui
+        $io->success($countSuccessItems. ' products was imported');
+        $io->warning($countMissingItems. ' products was missing');
+        $io->getErrorStyle()->error("Incorrect products:");
+
+        foreach ($arrayIncorrectItems as $item) {
+            $io->listing($item);
+        }
+
+        return Command::SUCCESS;
+    }
+
+    public function getCsvRowsAsArrays($inputFile) {
+        //
+        if (!file_exists($inputFile)) {
+            exit("File $inputFile not exists");
+        }
+        //use serializer for transfer csv to array
+        $decoder = new Serializer([new ObjectNormalizer()], [new CsvEncoder()]);
+
+        //get array of objects
+        $rows = $decoder->decode(file_get_contents($inputFile), 'csv');
+
+        //check headers
+        if (
+            !array_key_exists('Product Code', $rows[0])
+            || !array_key_exists('Product Name', $rows[0])
+            || !array_key_exists('Product Description', $rows[0])
+            || !array_key_exists('Stock', $rows[0])
+            || !array_key_exists('Cost in GBP', $rows[0])
+            || !array_key_exists('Discontinued', $rows[0])
+        ) {
+            exit('File headers do not match expected');
+        }
+
+        return $rows;
+    }
+}
