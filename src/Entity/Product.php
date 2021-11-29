@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  */
-class Product
-{
-    
+class Product {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue()
