@@ -39,7 +39,7 @@ class FileUploadService {
         try {
             $file->move($this->getTargetDirectory(), $fileName);
         } catch (FileException $e) {
-            error_log($e->getMessage());
+            print($e->getMessage());
         }
 
         return $fileName;

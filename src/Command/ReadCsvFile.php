@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Service\ProductService;
+use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,6 +12,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use function PHPUnit\Framework\throwException;
 
 class ReadCsvFile extends Command {
     /**
@@ -49,13 +51,19 @@ class ReadCsvFile extends Command {
      * @param OutputInterface $output
      *
      * @return int
+     *
+     * @throws Exception
      */
     public function execute(InputInterface $input, OutputInterface $output): int {
         //Get argument
         $processPermission = $input->getArgument('test');
         $fileName = $input->getArgument('filename');
 
-        $productsArray = $this->getCsvRowsAsArrays($this->targetDirectory.'stock.csv');
+        try {
+            $productsArray = $this->getCsvRowsAsArrays($this->targetDirectory . $fileName);
+        } catch (Exception $e) {
+            return Command::INVALID;
+        }
         $countMissingItems = 0;
         $countSuccessItems = 0;
 
@@ -98,10 +106,10 @@ class ReadCsvFile extends Command {
                 }
 
                 $countSuccessItems++;
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 $io->warning($exception->getMessage());
 
-                break;
+                return Command::FAILURE;
             }
         }
 
@@ -121,6 +129,8 @@ class ReadCsvFile extends Command {
      * @param $inputFile
      *
      * @return mixed|void
+     *
+     * @throws Exception
      */
     public function getCsvRowsAsArrays($inputFile) {
         //
@@ -132,7 +142,6 @@ class ReadCsvFile extends Command {
 
         //get array of objects
         $rows = $decoder->decode(file_get_contents($inputFile), 'csv');
-
         //check headers
         if (
             !array_key_exists('Product Code', $rows[0])
@@ -142,9 +151,9 @@ class ReadCsvFile extends Command {
             || !array_key_exists('Cost in GBP', $rows[0])
             || !array_key_exists('Discontinued', $rows[0])
         ) {
-            exit('File headers do not match expected');
+            throw new Exception('File headers do not match expected');
+        } else {
+            return $rows;
         }
-
-        return $rows;
     }
 }

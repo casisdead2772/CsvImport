@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Form\UploadFormType;
+use App\Service\CommandCallService;
 use App\Service\FileUploadService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -35,29 +36,35 @@ class UploadFileController extends AbstractController {
      *
      * @param Request $request
      * @param FileUploadService $fileUploader
+     * @param CommandCallService $commandCallService
      * @param KernelInterface $kernel
      *
      * @return RedirectResponse|Response
      */
-    public function upload(Request $request, FileUploadService $fileUploader, KernelInterface $kernel) {
+    public function upload(Request $request, FileUploadService $fileUploader, CommandCallService $commandCallService, KernelInterface $kernel) {
         $form = $this->createForm(UploadFormType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form['upload_file']->getData();
             $fileName = $fileUploader->upload($uploadedFile);
-            $application = new Application($kernel);
-            $application->setAutoExit(false);
-
-            $input = new ArrayInput([
-                    'command' => 'app:import',
-                    'filename' => $fileName,
-                ]);
-            $output = new BufferedOutput();
 
             try {
-                $application->run($input, $output);
-                $this->addFlash('success', 'File imported!');
+                $commandResult = $commandCallService->importCsvDB($fileName, $kernel);
+                switch ($commandResult) {
+                    case 0:
+                        $this->addFlash('success', 'File successfully uploaded and imported');
+
+                        break;
+                    case 1:
+                        $this->addFlash('danger', 'Error writing to database');
+
+                        break;
+                    case 2:
+                        $this->addFlash('danger', 'Invalid File');
+
+                        break;
+                }
             } catch (Exception $e) {
                 return new Response($e->getMessage());
             }
