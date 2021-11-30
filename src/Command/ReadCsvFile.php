@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\Service\CommandCallService;
+use App\Service\FileUploadService;
 use App\Service\ProductService;
 use Exception;
 use Symfony\Component\Console\Command\Command;
@@ -9,6 +11,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -31,12 +35,20 @@ class ReadCsvFile extends Command {
     protected ProductService $productService;
 
     /**
+     * @var FileUploadService
+     */
+    private FileUploadService $fileUploadService;
+
+
+    /**
      * @param $targetDirectory
      * @param ProductService $productService
+     * @param FileUploadService $fileUploadService
      */
-    public function __construct($targetDirectory, ProductService $productService) {
+    public function __construct($targetDirectory, ProductService $productService, FileUploadService $fileUploadService) {
         $this->targetDirectory = $targetDirectory;
         $this->productService = $productService;
+        $this->fileUploadService = $fileUploadService;
         parent::__construct();
     }
 
@@ -57,10 +69,10 @@ class ReadCsvFile extends Command {
     public function execute(InputInterface $input, OutputInterface $output): int {
         //Get argument
         $processPermission = $input->getArgument('test');
-        $fileName = $input->getArgument('filename');
+        $filename = $input->getArgument('filename');
 
         try {
-            $productsArray = $this->getCsvRowsAsArrays($this->targetDirectory . $fileName);
+            $productsArray = $this->getCsvRowsAsArrays($filename);
         } catch (Exception $e) {
             return Command::INVALID;
         }
@@ -74,8 +86,8 @@ class ReadCsvFile extends Command {
 
         foreach ($productsArray as $product) {
             //validate fields
-            $productValid = is_numeric($product['Stock'])
-                && is_numeric($product['Cost in GBP'])
+            $productValid = isset($product['Stock']) && is_numeric($product['Stock'])
+                && isset($product['Cost in GBP']) && is_numeric($product['Cost in GBP'])
                 && !empty($product['Product Code'])
                 && !empty($product['Product Name'])
                 && !empty($product['Product Description']);

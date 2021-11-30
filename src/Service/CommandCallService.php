@@ -5,20 +5,28 @@ namespace App\Service;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class CommandCallService {
+    private KernelInterface $kernel;
+
+    /**
+     * @param KernelInterface $kernel
+     */
+    public function __construct(KernelInterface $kernel) {
+        $this->kernel = $kernel;
+    }
     /**
      * @param string $fileName
-     * @param KernelInterface $kernel
      *
      * @return int
      *
      * @throws \Exception
      */
-    public function importCsvDB(string $fileName, KernelInterface $kernel): int {
+    public function importCsvDB(string $fileName): int {
         /** @var $application */
-        $application = new Application($kernel);
+        $application = new Application($this->kernel);
         $application->setAutoExit(false);
 
         $input = new ArrayInput([

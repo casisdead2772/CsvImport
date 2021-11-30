@@ -48,9 +48,8 @@ class UploadFileController extends AbstractController {
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form['upload_file']->getData();
             $fileName = $fileUploader->upload($uploadedFile);
-
             try {
-                $commandResult = $commandCallService->importCsvDB($fileName, $kernel);
+                $commandResult = $commandCallService->importCsvDB($fileName);
                 switch ($commandResult) {
                     case 0:
                         $this->addFlash('success', 'File successfully uploaded and imported');

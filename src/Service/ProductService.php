@@ -28,7 +28,6 @@ class ProductService {
         $selectedProduct->setDescription($product['Product Description']);
         $selectedProduct->setStock((int)$product['Stock']);
         $selectedProduct->setCost((int)((float)$product['Cost in GBP'] * 100));
-
         if ($product['Discontinued'] == 'yes') {
             $selectedProduct->setDiscontinued(new \DateTime('now'));
         }
