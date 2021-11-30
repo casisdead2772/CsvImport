@@ -48,6 +48,7 @@ class UploadFileController extends AbstractController {
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form['upload_file']->getData();
             $fileName = $fileUploader->upload($uploadedFile);
+
             try {
                 $commandResult = $commandCallService->importCsvDB($fileName);
                 switch ($commandResult) {
