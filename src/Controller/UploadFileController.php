@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Form\UploadFormType;
-use App\Service\CommandCallService;
 use App\Service\FileUploadService;
+use App\Service\ProductImportService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,12 +36,12 @@ class UploadFileController extends AbstractController {
      *
      * @param Request $request
      * @param FileUploadService $fileUploader
-     * @param CommandCallService $commandCallService
+     * @param ProductImportService $productImportService
      * @param KernelInterface $kernel
      *
      * @return RedirectResponse|Response
      */
-    public function upload(Request $request, FileUploadService $fileUploader, CommandCallService $commandCallService, KernelInterface $kernel) {
+    public function upload(Request $request, FileUploadService $fileUploader, ProductImportService $productImportService, KernelInterface $kernel) {
         $form = $this->createForm(UploadFormType::class);
         $form->handleRequest($request);
 
@@ -50,27 +50,26 @@ class UploadFileController extends AbstractController {
             $fileName = $fileUploader->upload($uploadedFile);
 
             try {
-                $commandResult = $commandCallService->importCsvDB($fileName);
-                switch ($commandResult) {
-                    case 0:
-                        $this->addFlash('success', 'File successfully uploaded and imported');
-
-                        break;
-                    case 1:
-                        $this->addFlash('danger', 'Error writing to database');
-
-                        break;
-                    case 2:
-                        $this->addFlash('danger', 'Invalid File');
-
-                        break;
-                }
+                $productArray = $productImportService->getCsvRowsAsArrays($fileName);
             } catch (Exception $e) {
-                return new Response($e->getMessage());
+                $this->addFlash('danger', $e->getMessage());
+
+                return $this->redirectToRoute('upload_file');
+            }
+
+            try {
+                $productImportService->importProductsByRules($productArray);
+            } catch (Exception $e) {
+                $this->addFlash('danger', $e->getMessage());
+
+                return $this->redirectToRoute('upload_file');
             }
         } else {
             $this->addFlash('danger', (string)$form->getErrors(true, true));
+
+            return $this->redirectToRoute('upload_file');
         }
+        $this->addFlash('success', 'File successfully imported');
 
         return $this->redirectToRoute('upload_file');
     }
