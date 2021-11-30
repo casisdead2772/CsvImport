@@ -51,19 +51,13 @@ class UploadFileController extends AbstractController {
 
             try {
                 $productArray = $productImportService->getCsvRowsAsArrays($fileName);
-            } catch (Exception $e) {
-                $this->addFlash('danger', $e->getMessage());
-
-                return $this->redirectToRoute('upload_file');
-            }
-
-            try {
                 $productImportService->importProductsByRules($productArray);
             } catch (Exception $e) {
                 $this->addFlash('danger', $e->getMessage());
 
                 return $this->redirectToRoute('upload_file');
             }
+
         } else {
             $this->addFlash('danger', (string)$form->getErrors(true, true));
 
