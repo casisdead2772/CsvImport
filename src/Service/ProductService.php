@@ -29,9 +29,10 @@ class ProductService {
         $selectedProduct->setStock((int)$product['Stock']);
         $selectedProduct->setCost((int)((float)$product['Cost in GBP'] * 100));
 
-        if ($product['Discontinued'] == 'yes') {
+        if ($product['Discontinued'] == 'yes' && !$selectedProduct->getDiscontinued()) {
             $selectedProduct->setDiscontinued(new \DateTime('now'));
         }
+
         $this->entityManager->persist($selectedProduct);
         $this->entityManager->flush();
     }
@@ -46,6 +47,7 @@ class ProductService {
         if (!$selectedProductObject) {
             $selectedProductObject = new Product();
         }
+
         $this->updateOrCreateProduct($product, $selectedProductObject);
     }
 }

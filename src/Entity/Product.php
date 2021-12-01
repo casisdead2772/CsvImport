@@ -5,8 +5,6 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Product
- *
  * @ORM\Table(name="tblProductData",
  *     uniqueConstraints={@ORM\UniqueConstraint(name="strProductCode", columns={"strProductCode"})})
  * @ORM\Entity
@@ -14,6 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Product {
     /**
+     * @var int
+     *
      * @ORM\Id
      * @ORM\GeneratedValue()
      * @ORM\Column(name="intProductDataId", type="integer", nullable=false, options={"unsigned"=true})
@@ -22,6 +22,7 @@ class Product {
 
     /**
      * @var string
+     *
      * @ORM\Column(name="strProductName", type="string", length=50, nullable=false)
      */
     private string $name;
@@ -55,22 +56,23 @@ class Product {
     private int $cost;
 
     /**
-     * @var \DateTime|null
+     * @var \Datetime
      *
      * @ORM\Column(name="dtmAdded", type="datetime", nullable=true)
      */
     private ?\DateTime $added = null;
 
     /**
-     * @var \DateTime|null
+     * @var \Datetime
      *
      * @ORM\Column(name="dtmDiscontinued", type="datetime", nullable=true)
      */
     private ?\DateTime $discontinued = null;
 
     /**
-     * @var \DateTime
-     * @ORM\Column(name="stmTimestamp", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
+     * @var \Datetime
+     *
+     * @ORM\Column(name="stmTimestamp", type="datetime", nullable=false)
      */
     private \DateTime $timestamp;
 
@@ -80,7 +82,6 @@ class Product {
     public function getId(): int {
         return $this->id;
     }
-
 
     /**
      * @return string
@@ -161,6 +162,7 @@ class Product {
 
     /**
      * @ORM\PreUpdate()
+     * @ORM\PrePersist()
      */
     public function setTimestamp(): void {
         $this->timestamp = new \DateTime('now');
