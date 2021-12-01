@@ -3,7 +3,6 @@
 namespace App\Service\ImportService;
 
 use App\Service\EntityService\EntityInterface;
-use App\ServiceInterface\ImportInterface;
 use InvalidArgumentException;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -58,13 +57,13 @@ abstract class GeneralImportService implements ImportInterface {
         }
         //style for console
         foreach ($itemsArray as $item) {
-            if (!$this->getProductValid($item)) {
+            if (!$this->getItemValid($item)) {
                 array_push($arrayIncorrectItems, $item);
 
                 continue;
             }
 
-            if (!$this->getProductRules($item)) {
+            if (!$this->getItemRules($item)) {
                 $countMissingItems++;
 
                 continue;

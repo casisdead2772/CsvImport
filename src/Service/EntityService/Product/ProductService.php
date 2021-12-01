@@ -20,6 +20,7 @@ class ProductService extends AbstractEntityService {
         if (!$selectedProduct) {
             $selectedProduct = new Product();
         }
+
         $selectedProduct->setName($object['Product Name']);
         $selectedProduct->setCode($object['Product Code']);
         $selectedProduct->setDescription($object['Product Description']);

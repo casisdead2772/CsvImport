@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Service\ImportService\ProductImportService;
+use App\Service\ImportService\Product\ProductImportService;
 use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

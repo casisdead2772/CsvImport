@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Form\UploadFormType;
 use App\Service\FileUploadService;
-use App\Service\ImportService\ProductImportService;
+use App\Service\ImportService\Product\ProductImportService;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
