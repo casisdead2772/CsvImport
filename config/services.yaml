@@ -29,5 +29,5 @@ services:
 #        arguments:
 #            $targetDirectory: '%kernel.project_dir%/storage/csvfiles/'
     product_import_service:
-        class: App\GeneralImportService
+        class: App\Service\GeneralImportService
         autowire: true

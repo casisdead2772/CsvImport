@@ -27,7 +27,7 @@ class GeneralImportService implements ImportInterface {
      *
      * @return mixed|void
      *
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function getCsvRowsAsArrays($inputFile) {
         //
@@ -55,12 +55,13 @@ class GeneralImportService implements ImportInterface {
     }
 
     /**
-     * @param $itemsArray
+     * @param $fileName
      * @param false $isTest
      *
      * @return array
      */
-    public function importByRules($itemsArray, bool $isTest = false): array {
+    public function importByRules($fileName, bool $isTest = false): array {
+        $itemsArray = $this->getCsvRowsAsArrays($fileName);
         $countMissingItems = 0;
         $countSuccessItems = 0;
         $arrayIncorrectItems = [];

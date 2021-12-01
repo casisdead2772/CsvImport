@@ -47,8 +47,7 @@ class UploadFileController extends AbstractController {
             $fileName = $fileUploader->upload($uploadedFile);
 
             try {
-                $productArray = $productImportService->getCsvRowsAsArrays($fileName);
-                $productImportService->importByRules($productArray);
+                $productImportService->importByRules($fileName);
             } catch (InvalidArgumentException $e) {
                 $this->addFlash('danger', $e->getMessage());
 
@@ -59,6 +58,7 @@ class UploadFileController extends AbstractController {
 
             return $this->redirectToRoute('upload_file');
         }
+
         $this->addFlash('success', 'File successfully imported');
 
         return $this->redirectToRoute('upload_file');

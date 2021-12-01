@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Service\GeneralImportService;
 use App\Service\ProductImportService;
 use App\Service\ProductService;
 use Exception;
@@ -28,20 +29,20 @@ class ReadCsvFile extends Command {
     protected ProductService $productService;
 
     /**
-     * @var ProductImportService
+     * @var GeneralImportService
      */
-    private ProductImportService $productImportService;
+    private GeneralImportService $generalImportService;
 
 
     /**
      * @param $targetDirectory
      * @param ProductService $productService
-     * @param ProductImportService $productImportService
+     * @param GeneralImportService $generalImportService
      */
-    public function __construct($targetDirectory, ProductService $productService, ProductImportService $productImportService) {
+    public function __construct($targetDirectory, ProductService $productService, GeneralImportService $generalImportService) {
         $this->targetDirectory = $targetDirectory;
         $this->productService = $productService;
-        $this->productImportService = $productImportService;
+        $this->generalImportService = $generalImportService;
         parent::__construct();
     }
 
@@ -67,13 +68,7 @@ class ReadCsvFile extends Command {
         $isTest = !empty($processPermission);
 
         try {
-            $productsArray = $this->productImportService->getCsvRowsAsArrays($filename);
-        } catch (Exception $e) {
-            return Command::INVALID;
-        }
-
-        try {
-            $results = $this->productImportService->importProductsByRules($productsArray, $isTest);
+            $results = $this->generalImportService->importByRules($filename, $isTest);
         } catch (Exception $e) {
             return Command::FAILURE;
         }
