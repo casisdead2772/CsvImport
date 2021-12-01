@@ -2,9 +2,7 @@
 
 namespace App\Command;
 
-use App\Service\GeneralImportService;
-use App\Service\ProductImportService;
-use App\Service\ProductService;
+use App\Service\ImportService\ProductImportService;
 use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -24,24 +22,17 @@ class ReadCsvFile extends Command {
     public string $targetDirectory;
 
     /**
-     * @var ProductService
+     * @var ProductImportService
      */
-    protected ProductService $productService;
-
-    /**
-     * @var GeneralImportService
-     */
-    private GeneralImportService $generalImportService;
+    private ProductImportService $generalImportService;
 
 
     /**
      * @param $targetDirectory
-     * @param ProductService $productService
-     * @param GeneralImportService $generalImportService
+     * @param ProductImportService $generalImportService
      */
-    public function __construct($targetDirectory, ProductService $productService, GeneralImportService $generalImportService) {
+    public function __construct($targetDirectory, ProductImportService $generalImportService) {
         $this->targetDirectory = $targetDirectory;
-        $this->productService = $productService;
         $this->generalImportService = $generalImportService;
         parent::__construct();
     }

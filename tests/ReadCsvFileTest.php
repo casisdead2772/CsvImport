@@ -2,7 +2,7 @@
 
 namespace App\Tests;
 
-use App\Service\ProductService;
+use App\Service\ImportService\ImportService\ProductService;
 use PHPUnit\Framework\TestCase;
 use App\Command\ReadCsvFile;
 use Symfony\Component\Console\Application;

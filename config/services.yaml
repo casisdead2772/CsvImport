@@ -25,9 +25,8 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-#    App\Service\FileUploadService:
-#        arguments:
-#            $targetDirectory: '%kernel.project_dir%/storage/csvfiles/'
     product_import_service:
-        class: App\Service\GeneralImportService
+        class: App\Service\ImportService\ProductImportService
         autowire: true
+
+    App\Service\ImportService\ProductImportService: '@product_import_service'
