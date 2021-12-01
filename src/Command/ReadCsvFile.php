@@ -60,7 +60,7 @@ class ReadCsvFile extends Command {
 
         try {
             $results = $this->productImportService->importByRules($filename, $isTest);
-        } catch (Exception $e) {
+        } catch (\InvalidArgumentException $e) {
             return Command::FAILURE;
         }
 

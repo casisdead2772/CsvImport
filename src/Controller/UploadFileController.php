@@ -51,6 +51,7 @@ class UploadFileController extends AbstractController {
 
                 return $this->redirectToRoute('upload_file');
             }
+
         } else {
             $this->addFlash('danger', (string)$form->getErrors(true, true));
 
