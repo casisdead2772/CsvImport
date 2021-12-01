@@ -2,13 +2,14 @@
 
 namespace App\Service;
 
-use Symfony\Component\HttpFoundation\Response;
+use App\ServiceInterface\ImportInterface;
+use InvalidArgumentException;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-class ProductImportService {
+class GeneralImportService implements ImportInterface {
     /**
      * @var ProductService
      */
@@ -47,25 +48,25 @@ class ProductImportService {
             || !array_key_exists('Cost in GBP', $rows[0])
             || !array_key_exists('Discontinued', $rows[0])
         ) {
-            throw new Exception('File headers do not match expected');
+            throw new InvalidArgumentException('File headers do not match expected');
         } else {
             return $rows;
         }
     }
 
     /**
-     * @param $productsArray
+     * @param $itemsArray
      * @param false $isTest
      *
      * @return array
      */
-    public function importProductsByRules($productsArray, bool $isTest = false): array {
+    public function importByRules($itemsArray, bool $isTest = false): array {
         $countMissingItems = 0;
         $countSuccessItems = 0;
         $arrayIncorrectItems = [];
 
         //style for console
-        foreach ($productsArray as $product) {
+        foreach ($itemsArray as $product) {
             //validate fields
             $productValid = isset($product['Stock']) && is_numeric($product['Stock'])
                 && isset($product['Cost in GBP']) && is_numeric($product['Cost in GBP'])
@@ -92,17 +93,14 @@ class ProductImportService {
                 continue;
             }
 
-            try {
-                //if arg exists, no import to the db
-                if (!$isTest) {
-                    $this->productService->checkExistingProduct($product);
-                }
-
-                $countSuccessItems++;
-            } catch (Exception $exception) {
-                new Response($exception->getMessage());
+            //if arg exists, no import to the db
+            if (!$isTest) {
+                $this->productService->checkExistingProduct($product);
             }
+
+            $countSuccessItems++;
         }
+
         $results['countMissingItems'] = $countMissingItems;
         $results['countSuccessItems'] = $countSuccessItems;
         $results['arrayIncorrectItems'] = $arrayIncorrectItems;

@@ -17,14 +17,11 @@ class UploadFormType extends AbstractType {
                 FileType::class,
                 [
                 'mapped' => false,
-                'constraints' => [
-                    new File(
-                        [
+                'constraints' => [new File([
                     'maxSize'           => '5M',
                     'mimeTypes'         => 'text/plain',
                     'mimeTypesMessage'  => 'Please upload a valid CSV document'
-                        ]
-                    )],
+                        ])],
             ]
             )
             ->add('submit', SubmitType::class);

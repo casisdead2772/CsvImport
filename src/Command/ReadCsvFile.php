@@ -2,8 +2,6 @@
 
 namespace App\Command;
 
-use App\Service\CommandCallService;
-use App\Service\FileUploadService;
 use App\Service\ProductImportService;
 use App\Service\ProductService;
 use Exception;
@@ -12,12 +10,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Serializer\Encoder\CsvEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
-use function PHPUnit\Framework\throwException;
 
 class ReadCsvFile extends Command {
     /**

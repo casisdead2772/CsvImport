@@ -38,7 +38,7 @@ class FileUploadService {
 
         try {
             $file->move($this->getTargetDirectory(), $fileName);
-        } catch (\Exception $e) {
+        } catch (FileException $e) {
             print($e->getMessage());
         }
 
@@ -50,18 +50,5 @@ class FileUploadService {
      */
     public function getTargetDirectory(): string {
         return $this->targetDirectory;
-    }
-
-    /**
-     * @param $filePath
-     *
-     * @return string
-     */
-    public function uploadCommand($filePath): string {
-        $filePathInfo = pathinfo($filePath);
-        $fileName = $filePathInfo['basename'];
-        copy($filePath, $this->targetDirectory.$fileName);
-
-        return $this->targetDirectory.$fileName;
     }
 }

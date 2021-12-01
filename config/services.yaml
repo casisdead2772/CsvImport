@@ -28,3 +28,6 @@ services:
 #    App\Service\FileUploadService:
 #        arguments:
 #            $targetDirectory: '%kernel.project_dir%/storage/csvfiles/'
+    product_import_service:
+        class: App\GeneralImportService
+        autowire: true

@@ -4,12 +4,9 @@ namespace App\Controller;
 
 use App\Form\UploadFormType;
 use App\Service\FileUploadService;
-use App\Service\ProductImportService;
-use Exception;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
+use App\Service\GeneralImportService;
+use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,12 +33,12 @@ class UploadFileController extends AbstractController {
      *
      * @param Request $request
      * @param FileUploadService $fileUploader
-     * @param ProductImportService $productImportService
+     * @param GeneralImportService $productImportService
      * @param KernelInterface $kernel
      *
      * @return RedirectResponse|Response
      */
-    public function upload(Request $request, FileUploadService $fileUploader, ProductImportService $productImportService, KernelInterface $kernel) {
+    public function upload(Request $request, FileUploadService $fileUploader, GeneralImportService $productImportService, KernelInterface $kernel) {
         $form = $this->createForm(UploadFormType::class);
         $form->handleRequest($request);
 
@@ -51,13 +48,12 @@ class UploadFileController extends AbstractController {
 
             try {
                 $productArray = $productImportService->getCsvRowsAsArrays($fileName);
-                $productImportService->importProductsByRules($productArray);
-            } catch (Exception $e) {
+                $productImportService->importByRules($productArray);
+            } catch (InvalidArgumentException $e) {
                 $this->addFlash('danger', $e->getMessage());
 
                 return $this->redirectToRoute('upload_file');
             }
-
         } else {
             $this->addFlash('danger', (string)$form->getErrors(true, true));
 
