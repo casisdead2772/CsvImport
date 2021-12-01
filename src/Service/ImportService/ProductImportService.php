@@ -2,7 +2,18 @@
 
 namespace App\Service\ImportService;
 
+use App\Service\EntityService\EntityInterface;
+use App\Service\EntityService\Product\ProductService;
+
 class ProductImportService extends GeneralImportService {
+
+    /**
+     * @param ProductService $entityInterface
+     */
+    public function __construct(ProductService $entityInterface) {
+        parent::__construct($entityInterface);
+    }
+
     /**
      * @param $productArray
      *

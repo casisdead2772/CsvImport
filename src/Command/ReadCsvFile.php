@@ -24,16 +24,16 @@ class ReadCsvFile extends Command {
     /**
      * @var ProductImportService
      */
-    private ProductImportService $generalImportService;
+    private ProductImportService $productImportService;
 
 
     /**
      * @param $targetDirectory
-     * @param ProductImportService $generalImportService
+     * @param ProductImportService $productImportService
      */
-    public function __construct($targetDirectory, ProductImportService $generalImportService) {
+    public function __construct($targetDirectory, ProductImportService $productImportService) {
         $this->targetDirectory = $targetDirectory;
-        $this->generalImportService = $generalImportService;
+        $this->productImportService = $productImportService;
         parent::__construct();
     }
 
@@ -59,7 +59,7 @@ class ReadCsvFile extends Command {
         $isTest = !empty($processPermission);
 
         try {
-            $results = $this->generalImportService->importByRules($filename, $isTest);
+            $results = $this->productImportService->importByRules($filename, $isTest);
         } catch (Exception $e) {
             return Command::FAILURE;
         }
