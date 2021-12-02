@@ -4,7 +4,7 @@ namespace App\Service\EntityService;
 
 use Doctrine\ORM\EntityManagerInterface;
 
-abstract class AbstractEntityService implements EntityInterface {
+abstract class AbstractEntityService implements BaseConfigInterface {
     /**
      * @var $model
      */

@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Form\UploadFormType;
 use App\Service\FileUploadService;
-use App\Service\ImportService\Product\ProductImportService;
+use App\Service\ImportService\GeneralImportService;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -32,11 +32,11 @@ class UploadFileController extends AbstractController {
      *
      * @param Request $request
      * @param FileUploadService $fileUploader
-     * @param ProductImportService $productImportService
+     * @param GeneralImportService $generalImportService
      *
      * @return RedirectResponse|Response
      */
-    public function upload(Request $request, FileUploadService $fileUploader, ProductImportService $productImportService) {
+    public function upload(Request $request, FileUploadService $fileUploader, GeneralImportService $generalImportService) {
         $form = $this->createForm(UploadFormType::class);
         $form->handleRequest($request);
 
@@ -45,13 +45,12 @@ class UploadFileController extends AbstractController {
             $fileName = $fileUploader->upload($uploadedFile);
 
             try {
-                $productImportService->importByRules($fileName);
+                $generalImportService->importByRules($fileName);
             } catch (InvalidArgumentException $e) {
                 $this->addFlash('danger', $e->getMessage());
 
                 return $this->redirectToRoute('upload_file');
             }
-
         } else {
             $this->addFlash('danger', (string)$form->getErrors(true, true));
 

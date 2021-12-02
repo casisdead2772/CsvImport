@@ -2,13 +2,14 @@
 
 namespace App\Command;
 
-use App\Service\ImportService\Product\ProductImportService;
+use App\Service\ImportService\GeneralImportService;
 use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class ReadCsvFile extends Command {
     /**
@@ -22,18 +23,17 @@ class ReadCsvFile extends Command {
     public string $targetDirectory;
 
     /**
-     * @var ProductImportService
+     * @var GeneralImportService
      */
-    private ProductImportService $productImportService;
-
+    private GeneralImportService $generalImportService;
 
     /**
      * @param $targetDirectory
-     * @param ProductImportService $productImportService
+     * @param GeneralImportService $generalImportService
      */
-    public function __construct($targetDirectory, ProductImportService $productImportService) {
+    public function __construct($targetDirectory, GeneralImportService $generalImportService) {
         $this->targetDirectory = $targetDirectory;
-        $this->productImportService = $productImportService;
+        $this->generalImportService = $generalImportService;
         parent::__construct();
     }
 
@@ -59,8 +59,10 @@ class ReadCsvFile extends Command {
         $isTest = !empty($processPermission);
 
         try {
-            $results = $this->productImportService->importByRules($filename, $isTest);
-        } catch (\InvalidArgumentException $e) {
+            $results = $this->generalImportService->importByRules($filename, $isTest);
+        } catch (\InvalidArgumentException | FileNotFoundException $e) {
+            print($e->getMessage());
+
             return Command::FAILURE;
         }
 

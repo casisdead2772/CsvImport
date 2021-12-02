@@ -26,7 +26,9 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
     product_import_service:
-        class: App\Service\ImportService\Product\ProductImportService
+        class: App\Service\ImportService\GeneralImportService
         autowire: true
+        arguments:
+            - '@App\Service\EntityService\Product\ProductService'
 
-    App\Service\ImportService\ProductImportService: '@product_import_service'
+    App\Service\ImportService\GeneralImportService: '@product_import_service'
