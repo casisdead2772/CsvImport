@@ -17,7 +17,7 @@ trait EntityManagerTrait {
      *
      * @param EntityManagerInterface $em
      */
-    public function setEntityManager(EntityManagerInterface $em) {
+    public function setEntityManager(EntityManagerInterface $em): void {
         $this->em = $em;
     }
 

@@ -22,12 +22,15 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
             - '../src/Tests/'
+            - '../src/Service/ImportService'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Factory\ServiceImportFactory: ~
+
     product_import_service:
         class: App\Service\ImportService\GeneralImportService
-        arguments:
-            - '@App\Service\EntityService\Product\ProductService'
+        factory: ['@App\Factory\ServiceImportFactory', 'createProductService']
+        arguments: ['@App\Service\EntityService\Product\ProductService']
 
     App\Service\ImportService\GeneralImportService: '@product_import_service'

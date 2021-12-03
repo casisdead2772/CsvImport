@@ -6,7 +6,8 @@ use App\Entity\Product;
 use App\Service\EntityService\BaseImportInterface;
 use App\Traits\EntityManagerTrait;
 
-class ProductService implements BaseImportInterface {
+class TestService implements BaseImportInterface
+{
     use EntityManagerTrait;
 
     /**

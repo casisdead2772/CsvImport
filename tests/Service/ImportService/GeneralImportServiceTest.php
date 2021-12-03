@@ -9,7 +9,7 @@ class GeneralImportServiceTest extends KernelTestCase {
     /**
      * @return void
      */
-    public function testImportFile() {
+    public function testImportFile(): void {
         $projectDirectory = getcwd();
         $filePath = '/storage/test/csvfiles/stock.csv';
         $container = static::getContainer();

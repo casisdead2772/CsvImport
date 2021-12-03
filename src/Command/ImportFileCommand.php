@@ -2,8 +2,8 @@
 
 namespace App\Command;
 
-use App\Service\EntityService\Product\ProductService;
-use App\Service\ImportService\GeneralImportService;
+use App\Factory\ServiceImportFactory;
+use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,16 +17,11 @@ class ImportFileCommand extends Command {
      */
     protected static $defaultName = 'app:import';
 
-    /**
-     * @var ProductService
-     */
-    private ProductService $productService;
+    private ServiceImportFactory $factory;
 
-    /**
-     * @param ProductService $productService
-     */
-    public function __construct(ProductService $productService) {
-        $this->productService = $productService;
+
+    public function __construct(ServiceImportFactory $factory) {
+        $this->factory = $factory;
         parent::__construct();
     }
 
@@ -50,19 +45,16 @@ class ImportFileCommand extends Command {
         $isTest = !empty($input->getArgument('test'));
         $io = new SymfonyStyle($input, $output);
 
-        switch ($importType) {
-            case 'product':
-                $productImportService = new GeneralImportService($this->productService);
+        try {
+            $importService = $this->factory->getImportService($importType);
+        } catch (InvalidArgumentException $e) {
+            $io->getErrorStyle()->error($e->getMessage());
 
-                break;
-            default:
-                $io->getErrorStyle()->error("This type not required");
-
-                return Command::FAILURE;
+            return Command::FAILURE;
         }
 
         try {
-            $results = $productImportService->importByRules($filename, $isTest);
+            $results = $importService->importByRules($filename, $isTest);
         } catch (\InvalidArgumentException | FileNotFoundException $e) {
             $io->getErrorStyle()->error($e->getMessage());
 
