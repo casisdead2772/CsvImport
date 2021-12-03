@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -10,7 +9,7 @@ class FileUploadService {
     /**
      * @var string
      */
-    public string $targetDirectory;
+    private string $targetDirectory;
 
     /**
      * @var SluggerInterface

@@ -30,7 +30,6 @@ class GeneralImportService {
     private function getCsvRowsAsArrays($inputFile) {
         //
         if (!file_exists($inputFile)) {
-
             throw new FileNotFoundException(sprintf('File %s not exists', $inputFile));
         }
         //use serializer for transfer csv to array
@@ -52,14 +51,20 @@ class GeneralImportService {
         $countMissingItems = 0;
         $countSuccessItems = 0;
         $arrayIncorrectItems = [];
+        $notExistingHeaders = [];
         $arrayHeaders = $this->baseConfigInterface->getItemHeaders();
 
         foreach ($arrayHeaders as $header) {
             if (!array_key_exists($header, $itemsArray[0])) {
-
-                throw new InvalidArgumentException('File headers do not match expected');
+                $notExistingHeaders[] = $header;
             }
         }
+
+        if (!empty($notExistingHeaders)) {
+
+            throw new InvalidArgumentException(sprintf('Excepted file headers: %s not founded', implode(', ', $notExistingHeaders)));
+        }
+
         //style for console
         foreach ($itemsArray as $item) {
             if (!$this->baseConfigInterface->getItemIsValid($item)) {

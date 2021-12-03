@@ -4,7 +4,6 @@ namespace App\Command;
 
 use App\Service\EntityService\Product\ProductService;
 use App\Service\ImportService\GeneralImportService;
-use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

@@ -51,7 +51,6 @@ class UploadFileController extends AbstractController {
             } catch (InvalidArgumentException|FileException $e) {
                 $this->addFlash('danger', $e->getMessage());
             }
-
         } else {
             $this->addFlash('danger', (string)$form->getErrors(true, true));
         }
