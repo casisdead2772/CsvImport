@@ -3,19 +3,18 @@
 namespace App\Service\EntityService\Product;
 
 use App\Entity\Product;
-use App\Service\EntityService\AbstractEntityService;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\EntityService\BaseImportInterface;
+use App\Traits\EntityManagerTrait;
 
-class ProductService extends AbstractEntityService {
-    public function __construct(EntityManagerInterface $em) {
-        parent::__construct($em, Product::class);
-    }
+class ProductService implements BaseImportInterface {
+    use EntityManagerTrait;
 
     /**
      * @param array $object
      */
     public function createOrUpdate(array $object) {
-        $selectedProduct = $this->model->findOneBy(['code' => $object['Product Code']]);
+        $productRepository = $this->getRepository(Product::class);
+        $selectedProduct = $productRepository->findOneBy(['code' => $object['Product Code']]);
 
         if (!$selectedProduct) {
             $selectedProduct = new Product();
@@ -31,13 +30,14 @@ class ProductService extends AbstractEntityService {
             $selectedProduct->setDiscontinued(new \DateTime('now'));
         }
 
-        $this->save($selectedProduct);
+        $this->getEntityManager()->persist($selectedProduct);
+        $this->getEntityManager()->flush();
     }
 
     /**
      * @return array
      */
-    public function getFileRules(): array {
+    public function getItemHeaders(): array {
         return ['Product Code', 'Product Name', 'Product Description', 'Stock', 'Cost in GBP', 'Discontinued'];
     }
 
@@ -46,7 +46,7 @@ class ProductService extends AbstractEntityService {
      *
      * @return bool
      */
-    public function getItemValid(array $item): bool {
+    public function getItemIsValid(array $item): bool {
         $itemValid = isset($item['Stock']) && is_numeric($item['Stock'])
             && isset($item['Cost in GBP']) && is_numeric($item['Cost in GBP'])
             && !empty($item['Product Code'])
@@ -61,7 +61,7 @@ class ProductService extends AbstractEntityService {
      *
      * @return bool
      */
-    public function getItemRules(array $item): bool {
+    public function getItemRulesIsValid(array $item): bool {
         $costProduct = (int)((float)$item['Cost in GBP'] * 100);
         $itemImportRules = !(((int)$item['Stock'] < 10 && $costProduct < 5 * 100) || $costProduct > 1000 * 100);
 

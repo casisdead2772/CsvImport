@@ -35,12 +35,7 @@ class FileUploadService {
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($originalFilename);
         $fileName = $safeFilename.'-'.uniqid().'.'.$file->getClientOriginalExtension();
-
-        try {
-            $file->move($this->getTargetDirectory(), $fileName);
-        } catch (FileException $e) {
-            print($e->getMessage());
-        }
+        $file->move($this->getTargetDirectory(), $fileName);
 
         return $this->getTargetDirectory().$fileName;
     }

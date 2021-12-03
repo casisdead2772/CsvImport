@@ -27,7 +27,6 @@ services:
     # please note that last definitions always *replace* previous ones
     product_import_service:
         class: App\Service\ImportService\GeneralImportService
-        autowire: true
         arguments:
             - '@App\Service\EntityService\Product\ProductService'
 

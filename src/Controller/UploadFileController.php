@@ -7,6 +7,7 @@ use App\Service\FileUploadService;
 use App\Service\ImportService\GeneralImportService;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,32 +33,28 @@ class UploadFileController extends AbstractController {
      *
      * @param Request $request
      * @param FileUploadService $fileUploader
-     * @param GeneralImportService $generalImportService
+     * @param GeneralImportService $productImportService
      *
      * @return RedirectResponse|Response
      */
-    public function upload(Request $request, FileUploadService $fileUploader, GeneralImportService $generalImportService) {
+    public function uploadProduct(Request $request, FileUploadService $fileUploader, GeneralImportService $productImportService) {
         $form = $this->createForm(UploadFormType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form['upload_file']->getData();
-            $fileName = $fileUploader->upload($uploadedFile);
 
             try {
-                $generalImportService->importByRules($fileName);
-            } catch (InvalidArgumentException $e) {
+                $fileName = $fileUploader->upload($uploadedFile);
+                $productImportService->importByRules($fileName);
+                $this->addFlash('success', 'File successfully imported');
+            } catch (InvalidArgumentException|FileException $e) {
                 $this->addFlash('danger', $e->getMessage());
-
-                return $this->redirectToRoute('upload_file');
             }
+
         } else {
             $this->addFlash('danger', (string)$form->getErrors(true, true));
-
-            return $this->redirectToRoute('upload_file');
         }
-
-        $this->addFlash('success', 'File successfully imported');
 
         return $this->redirectToRoute('upload_file');
     }

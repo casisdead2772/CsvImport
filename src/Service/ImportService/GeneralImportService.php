@@ -2,7 +2,7 @@
 
 namespace App\Service\ImportService;
 
-use App\Service\EntityService\BaseConfigInterface;
+use App\Service\EntityService\BaseImportInterface;
 use InvalidArgumentException;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
@@ -11,14 +11,14 @@ use Symfony\Component\Serializer\Serializer;
 
 class GeneralImportService {
     /**
-     * @var BaseConfigInterface
+     * @var BaseImportInterface
      */
-    public BaseConfigInterface $baseConfigInterface;
+    public BaseImportInterface $baseConfigInterface;
 
     /**
-     * @param BaseConfigInterface $baseConfigInterface
+     * @param BaseImportInterface $baseConfigInterface
      */
-    public function __construct(BaseConfigInterface $baseConfigInterface) {
+    public function __construct(BaseImportInterface $baseConfigInterface) {
         $this->baseConfigInterface = $baseConfigInterface;
     }
 
@@ -27,10 +27,11 @@ class GeneralImportService {
      *
      * @return mixed
      */
-    public function getCsvRowsAsArrays($inputFile) {
+    private function getCsvRowsAsArrays($inputFile) {
         //
         if (!file_exists($inputFile)) {
-            throw new FileNotFoundException("File $inputFile not exists");
+
+            throw new FileNotFoundException(sprintf('File %s not exists', $inputFile));
         }
         //use serializer for transfer csv to array
         $decoder = new Serializer([new ObjectNormalizer()], [new CsvEncoder()]);
@@ -39,9 +40,10 @@ class GeneralImportService {
         return $decoder->decode(file_get_contents($inputFile), 'csv');
     }
 
+
     /**
      * @param $fileName
-     * @param false $isTest
+     * @param bool $isTest
      *
      * @return array
      */
@@ -50,27 +52,27 @@ class GeneralImportService {
         $countMissingItems = 0;
         $countSuccessItems = 0;
         $arrayIncorrectItems = [];
-        $arrayHeaders = $this->baseConfigInterface->getFileRules();
+        $arrayHeaders = $this->baseConfigInterface->getItemHeaders();
 
         foreach ($arrayHeaders as $header) {
             if (!array_key_exists($header, $itemsArray[0])) {
+
                 throw new InvalidArgumentException('File headers do not match expected');
             }
         }
         //style for console
         foreach ($itemsArray as $item) {
-            if (!$this->baseConfigInterface->getItemValid($item)) {
-                array_push($arrayIncorrectItems, $item);
+            if (!$this->baseConfigInterface->getItemIsValid($item)) {
+                $arrayIncorrectItems[] = $item;
 
                 continue;
             }
 
-            if (!$this->baseConfigInterface->getItemRules($item)) {
+            if (!$this->baseConfigInterface->getItemRulesIsValid($item)) {
                 $countMissingItems++;
 
                 continue;
             }
-
             //if arg exists, no import to the db
             if (!$isTest) {
                 $this->baseConfigInterface->createOrUpdate($item);
