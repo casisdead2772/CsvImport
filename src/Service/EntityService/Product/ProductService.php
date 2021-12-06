@@ -9,10 +9,11 @@ use App\Traits\EntityManagerTrait;
 class ProductService implements BaseImportInterface {
     use EntityManagerTrait;
 
+    private const HEADERS = ['Product Code', 'Product Name', 'Product Description', 'Stock', 'Cost in GBP', 'Discontinued'];
     /**
      * @param array $object
      */
-    public function createOrUpdate(array $object) {
+    public function createOrUpdate(array $object): void {
         $productRepository = $this->getRepository(Product::class);
         $selectedProduct = $productRepository->findOneBy(['code' => $object['Product Code']]);
 
@@ -39,7 +40,7 @@ class ProductService implements BaseImportInterface {
      */
     public function getItemHeaders(): array {
 
-        return ['Product Code', 'Product Name', 'Product Description', 'Stock', 'Cost in GBP', 'Discontinued'];
+        return self::HEADERS;
     }
 
     /**

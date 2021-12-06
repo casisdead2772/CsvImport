@@ -5,8 +5,6 @@ namespace App\Service\EntityService;
 interface BaseImportInterface {
     /**
      * @param array $object
-     *
-     * @return mixed
      */
     public function createOrUpdate(array $object);
 
