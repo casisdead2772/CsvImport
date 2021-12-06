@@ -2,53 +2,33 @@
 
 namespace App\Command;
 
-use App\Service\GeneralImportService;
-use App\Service\ProductImportService;
-use App\Service\ProductService;
-use Exception;
+use App\Factory\ServiceImportFactory;
+use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
-class ReadCsvFile extends Command {
+class ImportFileCommand extends Command {
     /**
      * @var string The default command name, override in parent
      */
-    public static $defaultName = 'app:import';
+    protected static $defaultName = 'app:import';
 
-    /**
-     * @var string
-     */
-    public string $targetDirectory;
-
-    /**
-     * @var ProductService
-     */
-    protected ProductService $productService;
-
-    /**
-     * @var GeneralImportService
-     */
-    private GeneralImportService $generalImportService;
+    private ServiceImportFactory $factory;
 
 
-    /**
-     * @param $targetDirectory
-     * @param ProductService $productService
-     * @param GeneralImportService $generalImportService
-     */
-    public function __construct($targetDirectory, ProductService $productService, GeneralImportService $generalImportService) {
-        $this->targetDirectory = $targetDirectory;
-        $this->productService = $productService;
-        $this->generalImportService = $generalImportService;
+    public function __construct(ServiceImportFactory $factory) {
+        $this->factory = $factory;
         parent::__construct();
     }
 
     protected function configure() {
         $this->setDescription('Read CSV file')
             ->addArgument('filename', InputArgument::REQUIRED, 'File name')
+            ->addArgument('importType', InputArgument::REQUIRED, 'Type import file')
             ->addArgument('test', InputArgument::OPTIONAL, 'Test execute', false);
     }
 
@@ -57,24 +37,31 @@ class ReadCsvFile extends Command {
      * @param OutputInterface $output
      *
      * @return int
-     *
-     * @throws Exception
      */
     public function execute(InputInterface $input, OutputInterface $output): int {
         //Get argument
-        $processPermission = $input->getArgument('test');
         $filename = $input->getArgument('filename');
-
-        $isTest = !empty($processPermission);
+        $importType = $input->getArgument('importType');
+        $isTest = !empty($input->getArgument('test'));
+        $io = new SymfonyStyle($input, $output);
 
         try {
-            $results = $this->generalImportService->importByRules($filename, $isTest);
-        } catch (Exception $e) {
+            $importService = $this->factory->getImportService($importType);
+        } catch (InvalidArgumentException $e) {
+            $io->getErrorStyle()->error($e->getMessage());
+
+            return Command::FAILURE;
+        }
+
+        try {
+            $results = $importService->importByRules($filename, $isTest);
+        } catch (\InvalidArgumentException | FileNotFoundException $e) {
+            $io->getErrorStyle()->error($e->getMessage());
+
             return Command::FAILURE;
         }
 
         //command ui style for console
-        $io = new SymfonyStyle($input, $output);
         $io->success($results['countSuccessItems']. ' products was imported');
         $io->warning($results['countMissingItems']. ' products was missing');
         $io->getErrorStyle()->error("Incorrect products:");

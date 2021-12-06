@@ -1,4 +1,7 @@
 {
+    "christianblos/symfony-di-annotation": {
+        "version": "2.0.0"
+    },
     "composer/package-versions-deprecated": {
         "version": "1.11.99.4"
     },

@@ -56,14 +56,14 @@ class Product {
     private int $cost;
 
     /**
-     * @var \Datetime
+     * @var \Datetime|null
      *
      * @ORM\Column(name="dtmAdded", type="datetime", nullable=true)
      */
     private ?\DateTime $added = null;
 
     /**
-     * @var \Datetime
+     * @var \Datetime|null
      *
      * @ORM\Column(name="dtmDiscontinued", type="datetime", nullable=true)
      */

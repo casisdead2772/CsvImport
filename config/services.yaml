@@ -22,12 +22,17 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
             - '../src/Tests/'
+            - '../src/Service/ImportService'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-#    App\Service\FileUploadService:
-#        arguments:
-#            $targetDirectory: '%kernel.project_dir%/storage/csvfiles/'
+    App\Factory\ServiceImportFactory: ~
+
     product_import_service:
-        class: App\Service\GeneralImportService
-        autowire: true
+        class: App\Service\ImportService\GeneralImportService
+        factory: ['@App\Factory\ServiceImportFactory', 'createProductService']
+        arguments: ['@App\Service\EntityService\Product\ProductService']
+
+    App\Controller\UploadFileController:
+        bind:
+            App\Service\ImportService\GeneralImportService: '@product_import_service'
