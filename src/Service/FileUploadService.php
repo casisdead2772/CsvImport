@@ -33,7 +33,7 @@ class FileUploadService {
     public function upload(UploadedFile $file): string {
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($originalFilename);
-        $fileName = $safeFilename.'-'.uniqid().'.'.$file->getClientOriginalExtension();
+        $fileName = $safeFilename.'-'.uniqid('', true).'.'.$file->getClientOriginalExtension();
         $file->move($this->getTargetDirectory(), $fileName);
 
         return $this->getTargetDirectory().$fileName;
@@ -43,6 +43,7 @@ class FileUploadService {
      * @return string
      */
     public function getTargetDirectory(): string {
+
         return $this->targetDirectory;
     }
 }

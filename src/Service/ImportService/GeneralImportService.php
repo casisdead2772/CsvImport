@@ -40,7 +40,6 @@ class GeneralImportService {
         return $decoder->decode(file_get_contents($inputFile), 'csv');
     }
 
-
     /**
      * @param $fileName
      * @param bool $isTest

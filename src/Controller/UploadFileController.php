@@ -40,6 +40,7 @@ class UploadFileController extends AbstractController {
     public function uploadProduct(Request $request, FileUploadService $fileUploader, GeneralImportService $productImportService) {
         $form = $this->createForm(UploadFormType::class);
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form['upload_file']->getData();
 

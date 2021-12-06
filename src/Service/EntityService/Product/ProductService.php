@@ -38,6 +38,7 @@ class ProductService implements BaseImportInterface {
      * @return array
      */
     public function getItemHeaders(): array {
+
         return ['Product Code', 'Product Name', 'Product Description', 'Stock', 'Cost in GBP', 'Discontinued'];
     }
 
