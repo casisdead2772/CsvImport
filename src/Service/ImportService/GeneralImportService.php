@@ -85,7 +85,6 @@ class GeneralImportService {
 
             $countSuccessItems++;
         }
-
         $results['countMissingItems'] = $countMissingItems;
         $results['countSuccessItems'] = $countSuccessItems;
         $results['arrayIncorrectItems'] = $arrayIncorrectItems;

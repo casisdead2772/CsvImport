@@ -62,13 +62,20 @@ class ImportFileCommand extends Command {
         }
 
         //command ui style for console
-        $io->success($results['countSuccessItems']. ' products was imported');
-        $io->warning($results['countMissingItems']. ' products was missing');
-        $io->getErrorStyle()->error("Incorrect products:");
+        if (!empty($results)) {
+            $io->success($results['countSuccessItems']. ' products was imported');
+            $io->warning($results['countMissingItems']. ' products was missing');
+            $io->getErrorStyle()->error("Incorrect products:");
 
-        foreach ($results['arrayIncorrectItems'] as $item) {
-            $io->listing($item);
+            foreach ($results['arrayIncorrectItems'] as $item) {
+                $io->listing($item);
+            }
+        } else {
+            $io->getErrorStyle()->error('No items');
+
+            return Command::FAILURE;
         }
+
 
         return Command::SUCCESS;
     }

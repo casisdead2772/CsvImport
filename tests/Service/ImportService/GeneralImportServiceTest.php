@@ -2,7 +2,6 @@
 
 namespace App\Tests\Service\ImportService;
 
-use App\Service\ImportService\GeneralImportService;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class GeneralImportServiceTest extends KernelTestCase {
@@ -11,9 +10,9 @@ class GeneralImportServiceTest extends KernelTestCase {
      */
     public function testImportFile(): void {
         $projectDirectory = getcwd();
-        $filePath = '/storage/test/csvfiles/stock.csv';
+        $filePath = '/storage/test/csvfiles/stock1.csv';
         $container = static::getContainer();
-        $productImportService = $container->get(GeneralImportService::class);
+        $productImportService = $container->get('product_import_service');
         $this->assertArrayHasKey('countSuccessItems', $productImportService->importByRules($projectDirectory.$filePath, true));
     }
 }
