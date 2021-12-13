@@ -30,7 +30,6 @@ class GeneralImportService {
     private function getCsvRowsAsArrays($inputFile) {
         //
         if (!file_exists($inputFile)) {
-
             throw new FileNotFoundException(sprintf('File %s not exists', $inputFile));
         }
         //use serializer for transfer csv to array
@@ -61,7 +60,6 @@ class GeneralImportService {
         }
 
         if (!empty($notExistingHeaders)) {
-
             throw new InvalidArgumentException(sprintf('Excepted file headers: %s not founded', implode(', ', $notExistingHeaders)));
         }
 

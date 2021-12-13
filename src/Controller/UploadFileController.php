@@ -3,15 +3,21 @@
 namespace App\Controller;
 
 use App\Form\UploadFormType;
+use App\Message\UploadNotification;
+use App\Messenger\UniqueIdStamp;
+use App\Service\EntityService\ImportResult\ImportResultService;
 use App\Service\FileUploadService;
-use App\Service\ImportService\GeneralImportService;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UploadFileController extends AbstractController {
     /**
@@ -33,28 +39,56 @@ class UploadFileController extends AbstractController {
      *
      * @param Request $request
      * @param FileUploadService $fileUploader
-     * @param GeneralImportService $productImportService
+     * @param MessageBusInterface $bus
+     * @param ValidatorInterface $validatorInterface
      *
-     * @return RedirectResponse|Response
+     * @return JsonResponse
      */
-    public function uploadProduct(Request $request, FileUploadService $fileUploader, GeneralImportService $productImportService) {
-        $form = $this->createForm(UploadFormType::class);
-        $form->handleRequest($request);
+    public function uploadProduct(Request $request, FileUploadService $fileUploader, MessageBusInterface $bus, ValidatorInterface $validatorInterface): JsonResponse {
+        /** @var UploadedFile $uploadedFile */
+        $uploadedFile = $request->files->get('file');
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $uploadedFile = $form['upload_file']->getData();
+        $violations = $validatorInterface->validate(
+            $uploadedFile,
+            [
+                new Assert\NotBlank([
+                    'message' => 'Please select a file to upload'
+                    ]),
+                new Assert\File([
+                    'maxSize'           => '5000000',
+                    'mimeTypes'         => 'text/plain',
+                    'mimeTypesMessage'  => 'Please upload a valid CSV document'
+                ])
+            ]
+        );
 
-            try {
-                $fileName = $fileUploader->upload($uploadedFile);
-                $productImportService->importByRules($fileName);
-                $this->addFlash('success', 'File successfully imported');
-            } catch (InvalidArgumentException|FileException $e) {
-                $this->addFlash('danger', $e->getMessage());
-            }
-        } else {
-            $this->addFlash('danger', (string)$form->getErrors(true, true));
+        if ($violations->count() > 0) {
+            return $this->json($violations, 400);
         }
 
-        return $this->redirectToRoute('upload_file');
+        try {
+            $filename = $fileUploader->upload($uploadedFile);
+            $envelope = $bus->dispatch(new UploadNotification($filename));
+            /** @var UniqueIdStamp $stamp */
+            $stamp = $envelope->last(UniqueIdStamp::class);
+            $id = $stamp->getUniqueId();
+        } catch (InvalidArgumentException|FileException $e) {
+            return $this->json($e->getMessage(), 400);
+        }
+
+        return $this->json($id, Response::HTTP_OK);
+    }
+
+    /**
+     * @Route ("/result/{id}", "result", methods={"GET"})
+     *
+     * @param string $id
+     * @param ImportResultService $importResultService
+     *
+     * @return JsonResponse
+     */
+    public function showEndHandler(string $id, ImportResultService $importResultService): JsonResponse {
+
+        return $this->json($importResultService->getStatusMessage($id));
     }
 }

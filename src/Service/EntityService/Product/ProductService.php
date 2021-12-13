@@ -39,7 +39,6 @@ class ProductService implements BaseImportInterface {
      * @return array
      */
     public function getItemHeaders(): array {
-
         return self::HEADERS;
     }
 

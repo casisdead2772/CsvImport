@@ -27,11 +27,9 @@ class ServiceImportFactory {
 
     public function getImportService($importType): GeneralImportService {
         if ($importType === self::PRODUCT) {
-
             return $this->createProductService();
         }
 
         throw new InvalidArgumentException('This type not required');
     }
-
 }
