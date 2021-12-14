@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20211213095236 extends AbstractMigration
+final class Version20211214085717 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,12 +20,14 @@ final class Version20211213095236 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE error (id INT AUTO_INCREMENT NOT NULL, user_id INT DEFAULT NULL, code VARCHAR(255) DEFAULT NULL, message VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('ALTER TABLE error ADD created_at timestamp(6), ADD updated_at timestamp(6)');
+        $this->addSql('ALTER TABLE message ADD created_at timestamp(6), ADD updated_at timestamp(6)');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('DROP TABLE error');
+        $this->addSql('ALTER TABLE error DROP created_at, DROP updated_at');
+        $this->addSql('ALTER TABLE message DROP created_at, DROP updated_at');
     }
 }

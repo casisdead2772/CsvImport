@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Service\EntityService\ImportResult;
+namespace App\Service\EntityService\Message;
 
-use App\Entity\ImportResult;
+use App\Entity\Message;
+use App\Repository\MessageRepository;
 use App\Traits\EntityManagerTrait;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ImportResultService {
+class MessageService {
     use EntityManagerTrait;
 
     private const SEND = 0;
@@ -15,12 +17,22 @@ class ImportResultService {
     private const SUCCESS = 2;
 
     /**
+     * @var MessageRepository
+     */
+    private MessageRepository $messageRepository;
+
+
+    public function __construct(MessageRepository $messageRepository) {
+        $this->messageRepository = $messageRepository;
+    }
+
+    /**
      * @param $messageId
      *
      * @return void
      */
     public function create($messageId): void {
-        $result = new ImportResult();
+        $result = new Message();
         $result->setMessageId($messageId);
         $result->setStatus(self::SEND);
 
@@ -35,12 +47,10 @@ class ImportResultService {
      * @return void
      */
     public function update($messageId, $status): void {
-        $productRepository = $this->getRepository(ImportResult::class);
-        /** @var ImportResult $result */
-        $result = $productRepository->findOneBy(['messageId' => $messageId]);
-        $result->setStatus($status);
+        $message = $this->messageRepository->getMessageById($messageId);
+        $message->setStatus($status);
 
-        $this->getEntityManager()->persist($result);
+        $this->getEntityManager()->persist($message);
         $this->getEntityManager()->flush();
     }
 
@@ -50,10 +60,7 @@ class ImportResultService {
      * @return int|null
      */
     public function getStatusMessage($messageId): ?int {
-        $productRepository = $this->getRepository(ImportResult::class);
-        /** @var ImportResult $result */
-        $result = $productRepository->findOneBy(['messageId' => $messageId]);
 
-        return $result->getStatus();
+        return $this->messageRepository->getMessageById($messageId)->getStatus();
     }
 }

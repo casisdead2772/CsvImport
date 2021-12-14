@@ -3,8 +3,8 @@
 namespace App\EventListener;
 
 use App\Messenger\UniqueIdStamp;
-use App\Service\EntityService\ErrorService\ErrorService;
-use App\Service\EntityService\ImportResult\ImportResultService;
+use App\Service\EntityService\Error\ErrorService;
+use App\Service\EntityService\Message\MessageService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\Event\SendMessageToTransportsEvent;
@@ -17,9 +17,9 @@ class WorkerSubscriber implements EventSubscriberInterface {
      */
     private LoggerInterface $logger;
     /**
-     * @var ImportResultService
+     * @var MessageService
      */
-    private ImportResultService $importResultService;
+    private MessageService $messageService;
     /**
      * @var ErrorService
      */
@@ -27,16 +27,17 @@ class WorkerSubscriber implements EventSubscriberInterface {
 
     /**
      * @param LoggerInterface $logger
-     * @param ImportResultService $importResultService
+     * @param MessageService $messageService
      * @param ErrorService $errorService
      */
-    public function __construct(LoggerInterface $logger, ImportResultService $importResultService, ErrorService $errorService) {
+    public function __construct(LoggerInterface $logger, MessageService $messageService, ErrorService $errorService) {
         $this->logger = $logger;
-        $this->importResultService = $importResultService;
+        $this->messageService = $messageService;
         $this->errorService = $errorService;
     }
 
     public static function getSubscribedEvents(): array {
+
         return [
             WorkerMessageHandledEvent::class => 'onWorkerMessageHandledEvent',
             SendMessageToTransportsEvent::class => 'onSendMessageToTransportsEvent',
@@ -50,35 +51,36 @@ class WorkerSubscriber implements EventSubscriberInterface {
      * @return void
      */
     public function onWorkerMessageHandledEvent(WorkerMessageHandledEvent $event): void {
-        /** @var UniqueIdStamp $uniqueIdStamp */
-        $uniqueIdStamp = $event->getEnvelope()->last(UniqueIdStamp::class);
-        $id = $uniqueIdStamp->getUniqueId();
+        $id = $this->getMessageId($event);
         $this->logger->info($event->getReceiverName());
 
-        $this->importResultService->update($id, 2);
+        $this->messageService->update($id, 2);
     }
 
-    public function onSendMessageToTransportsEvent(SendMessageToTransportsEvent $envelope): void {
-        /** @var UniqueIdStamp $uniqueIdStamp */
-        $uniqueIdStamp = $envelope->getEnvelope()->last(UniqueIdStamp::class);
-        $id = $uniqueIdStamp->getUniqueId();
+    public function onSendMessageToTransportsEvent(SendMessageToTransportsEvent $event): void {
+        $id = $this->getMessageId($event);
         $this->logger->info("SendMessage from event $id");
 
-        $this->importResultService->create($id);
+        $this->messageService->create($id);
     }
 
-    public function onWorkerMessageFailedEvent(WorkerMessageFailedEvent $envelope): void {
-        /** @var UniqueIdStamp $uniqueIdStamp */
-        $uniqueIdStamp = $envelope->getEnvelope()->last(UniqueIdStamp::class);
-        $id = $uniqueIdStamp->getUniqueId();
-        $errors = $envelope->getThrowable();
+    public function onWorkerMessageFailedEvent(WorkerMessageFailedEvent $event): void {
+        $id = $this->getMessageId($event);
+        $errors = $event->getThrowable();
         $errorInfo = [
             'code' => $errors->getCode(),
             'message' => $errors->getMessage(),
-            'import_result_id' => $id
+            'message_id' => $id
         ];
 
         $this->errorService->create($errorInfo);
-        $this->importResultService->update($id, 1);
+        $this->messageService->update($id, 1);
+    }
+
+    private function getMessageId($event): string {
+        /** @var UniqueIdStamp $uniqueIdStamp */
+        $uniqueIdStamp = $event->getEnvelope()->last(UniqueIdStamp::class);
+
+        return $uniqueIdStamp->getUniqueId();
     }
 }

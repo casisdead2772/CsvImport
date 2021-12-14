@@ -2,13 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\ImportResultRepository;
+use App\Repository\MessageRepository;
+use App\Traits\TimestampTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\ImportResultRepository", repositoryClass=ImportResultRepository::class)
+ * @ORM\Entity(repositoryClass=MessageRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
-class ImportResult {
+class Message {
+    use TimestampTrait;
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -23,18 +26,20 @@ class ImportResult {
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $status;
+    private ?int $status;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $userId;
+    private ?int $userId;
 
     public function getId(): ?int {
+
         return $this->id;
     }
 
     public function getStatus(): ?int {
+
         return $this->status;
     }
 
@@ -45,6 +50,7 @@ class ImportResult {
     }
 
     public function getUserId(): ?int {
+
         return $this->userId;
     }
 
@@ -58,6 +64,7 @@ class ImportResult {
      * @return mixed
      */
     public function getMessageId() {
+
         return $this->messageId;
     }
 

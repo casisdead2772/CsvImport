@@ -3,12 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\ErrorRepository;
+use App\Traits\TimestampTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=ErrorRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class Error {
+    use TimestampTrait;
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -19,38 +22,41 @@ class Error {
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $user_id;
+    private ?int $userId;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\ImportResult", inversedBy="errors")
+     * @ORM\ManyToOne(targetEntity="Message", inversedBy="errors")
      */
-    private $importResult;
+    private ?Message $message;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $code;
+    private ?string $code;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $message;
+    private ?string $errorMessage;
 
     public function getId(): ?int {
+
         return $this->id;
     }
 
     public function getUserId(): ?int {
-        return $this->user_id;
+
+        return $this->userId;
     }
 
-    public function setUserId(?int $user_id): self {
-        $this->user_id = $user_id;
+    public function setUserId(?int $userId): self {
+        $this->userId = $userId;
 
         return $this;
     }
 
     public function getCode(): ?string {
+
         return $this->code;
     }
 
@@ -60,22 +66,24 @@ class Error {
         return $this;
     }
 
-    public function getMessage(): ?string {
-        return $this->message;
+    public function getErrorMessage(): ?string {
+
+        return $this->errorMessage;
     }
 
-    public function setMessage(string $message): self {
-        $this->message = $message;
+    public function setErrorMessage(string $errorMessage): self {
+        $this->errorMessage = $errorMessage;
 
         return $this;
     }
 
-    public function getImportResult(): ?ImportResult {
-        return $this->importResult;
+    public function getMessage(): ?Message {
+
+        return $this->message;
     }
 
-    public function setImportResult(?ImportResult $importResult): self {
-        $this->importResult = $importResult;
+    public function setMessage(?Message $message): self {
+        $this->message = $message;
 
         return $this;
     }

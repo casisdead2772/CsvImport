@@ -2,10 +2,9 @@
 
 namespace App\Controller;
 
-use App\Form\UploadFormType;
 use App\Message\UploadNotification;
 use App\Messenger\UniqueIdStamp;
-use App\Service\EntityService\ImportResult\ImportResultService;
+use App\Service\EntityService\Message\MessageService;
 use App\Service\FileUploadService;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,16 +25,14 @@ class UploadFileController extends AbstractController {
      * @return Response
      */
     public function index(): Response {
-        $form = $this->createForm(UploadFormType::class);
 
         return $this->render('index.html.twig', [
             'controller_name' => 'UploadFileController',
-            'upload_form' => $form->createView()
         ]);
     }
 
     /**
-     * @Route ("/", name="upload", methods={"POST"})
+     * @Route ("/upload", name="upload", methods={"POST"})
      *
      * @param Request $request
      * @param FileUploadService $fileUploader
@@ -73,22 +70,11 @@ class UploadFileController extends AbstractController {
             $stamp = $envelope->last(UniqueIdStamp::class);
             $id = $stamp->getUniqueId();
         } catch (InvalidArgumentException|FileException $e) {
+
             return $this->json($e->getMessage(), 400);
         }
 
         return $this->json($id, Response::HTTP_OK);
     }
 
-    /**
-     * @Route ("/result/{id}", "result", methods={"GET"})
-     *
-     * @param string $id
-     * @param ImportResultService $importResultService
-     *
-     * @return JsonResponse
-     */
-    public function showEndHandler(string $id, ImportResultService $importResultService): JsonResponse {
-
-        return $this->json($importResultService->getStatusMessage($id));
-    }
 }

@@ -7,8 +7,8 @@
       <div class="col-4">
         <div class="card p-2">
           <div class="form-group m-2">
-            <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
-            <button class="btn btn-primary" v-on:click="submitFile()">Submit</button>
+            <input type="file" id="file" ref="file" accept=".csv" v-on:change="handleFileUpload()"/>
+            <button :disabled="disabledButton" class="btn btn-primary" v-on:click="submitFile()">Submit</button>
           </div>
         </div>
       </div>
@@ -22,11 +22,11 @@ export default {
   name: "App.vue",
   data: () => ({
     file: '',
-    result: '',
     importId: '',
     importStatus: 0,
     errors: [],
-    importError: ''
+    importError: '',
+    disabledButton: true
   }),
   created() {
 
@@ -37,7 +37,7 @@ export default {
         let interval = setInterval(() => {
           this.getResult()
           this.getError()
-          if (this.importStatus == 2) {
+          if (this.importStatus === 2) {
             clearInterval(interval);
             return resolve({
               title: 'Success!',
@@ -46,7 +46,7 @@ export default {
                 closeOnClick: true
               }
             })
-          } else if (this.importStatus == 1) {
+          } else if (this.importStatus === 1) {
             clearInterval(interval);
             return reject({
               title: 'Error!',
@@ -60,10 +60,12 @@ export default {
       }));
     },
     async submitFile() {
+      this.importStatus = 0
+      this.importError = ''
       let formData = new FormData();
       formData.append('file', this.file);
       try {
-        let response = await this.axios.post('/',
+        let response = await this.axios.post('/upload',
             formData,
             {
               headers: {
@@ -77,31 +79,45 @@ export default {
         this.errors = err.response.data.detail
 
         this.$snotify.error(this.errors, 'Upload error', {
-          timeout: 5000,
+          timeout: 2000,
           pauseOnHover: true
         });
       }
     },
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
+      if(!this.file || this.file.type !== 'text/csv'){
+        this.$snotify.error('Bad file', 'Upload error', {
+          timeout: 2000,
+          pauseOnHover: true
+        });
+      } else {
+        this.disabledButton = false
+      }
     },
     async getResult() {
       try {
-        let response = await this.axios.get('/result/' + this.importId)
+        let response = await this.axios.get('/import/result/' + this.importId)
         this.importStatus = response.data
       } catch (err) {
         this.errors = err
         console.log(err)
       }
     },
-    async getError() {
+    getError() {
       try {
-        let response = await this.axios.get('/errors/' + this.importId)
-        this.importError = response.data
+        this.axios.get('/import/errors/' + this.importId)
+        .then((response) => {
+          this.importError = response.data
+        })
+        return this.importError
       } catch (err) {
         console.log(err)
       }
     }
+    // getFilename() {
+    //   return this.file.
+    // }
   }
 }
 </script>
