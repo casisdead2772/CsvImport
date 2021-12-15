@@ -65,6 +65,7 @@ class GeneralImportService {
         }
 
         $count = 0;
+
         foreach ($itemsArray as $row => $item) {
             $violations = $this->baseConfigInterface->getItemIsValid($item);
 
@@ -72,10 +73,12 @@ class GeneralImportService {
                 $arrayIncorrectItems[$count]['item'] = $item;
                 $arrayIncorrectItems[$count]['row'] = $row + 2;
                 /** @var ConstraintViolation $error */
+
                 foreach ($this->baseConfigInterface->getItemIsValid($item) as $key => $error) {
                     $arrayIncorrectItems[$count]['errors'][$key]['column'] = $error->getPropertyPath();
                     $arrayIncorrectItems[$count]['errors'][$key]['message'] = $error->getMessage();
                 }
+
                 $count++;
 
                 continue;
