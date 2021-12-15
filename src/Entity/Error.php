@@ -35,7 +35,7 @@ class Error {
     private ?string $code;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text")
      */
     private ?string $errorMessage;
 

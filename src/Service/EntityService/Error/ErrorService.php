@@ -3,11 +3,9 @@
 namespace App\Service\EntityService\Error;
 
 use App\Entity\Error;
-use App\Entity\Message;
 use App\Repository\ErrorRepository;
 use App\Repository\MessageRepository;
 use App\Traits\EntityManagerTrait;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ErrorService {
     use EntityManagerTrait;
@@ -54,5 +52,16 @@ class ErrorService {
         $lastError = $this->errorRepository->getLastErrorByMessage($message);
 
         return explode('failed: ', $lastError->getErrorMessage())[1];
+    }
+
+    /**
+     * @param $messageId
+     *
+     * @return string|null
+     */
+    public function getFailureMessage($messageId): ?string {
+        $message = $this->messageRepository->getMessageById($messageId);
+
+        return $this->errorRepository->getFailureByMessage($message)->getErrorMessage();
     }
 }

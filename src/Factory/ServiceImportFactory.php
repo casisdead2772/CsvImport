@@ -27,6 +27,7 @@ class ServiceImportFactory {
 
     public function getImportService($importType): GeneralImportService {
         if ($importType === self::PRODUCT) {
+
             return $this->createProductService();
         }
 

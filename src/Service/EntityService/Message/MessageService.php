@@ -10,12 +10,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class MessageService {
     use EntityManagerTrait;
 
-    private const SEND = 0;
-
-    private const FAIL = 1;
-
-    private const SUCCESS = 2;
-
     /**
      * @var MessageRepository
      */
@@ -34,7 +28,7 @@ class MessageService {
     public function create($messageId): void {
         $result = new Message();
         $result->setMessageId($messageId);
-        $result->setStatus(self::SEND);
+        $result->setStatus(MessageRepository::SENT);
 
         $this->getEntityManager()->persist($result);
         $this->getEntityManager()->flush();

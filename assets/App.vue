@@ -26,18 +26,17 @@ export default {
     importStatus: 0,
     errors: [],
     importError: '',
-    disabledButton: true
+    disabledButton: true,
+    failures: []
   }),
-  created() {
-
-  },
   methods: {
     notification() {
-      this.$snotify.async('Import file', 'Success async', () => new Promise((resolve, reject) => {
+      this.$snotify.async('Import file', 'In progress', () => new Promise((resolve, reject) => {
         let interval = setInterval(() => {
           this.getResult()
-          this.getError()
-          if (this.importStatus === 2) {
+          // this.getError()
+          if (this.importStatus === 2 ) {
+            this.getIncorrectErrors()
             clearInterval(interval);
             return resolve({
               title: 'Success!',
@@ -48,13 +47,7 @@ export default {
             })
           } else if (this.importStatus === 1) {
             clearInterval(interval);
-            return reject({
-              title: 'Error!',
-              body: this.importError,
-              config: {
-                closeOnClick: true
-              }
-            })
+            return this.getError(reject)
           }
         }, 2000);
       }));
@@ -84,6 +77,7 @@ export default {
         });
       }
     },
+
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
       if(!this.file || this.file.type !== 'text/csv'){
@@ -95,6 +89,7 @@ export default {
         this.disabledButton = false
       }
     },
+
     async getResult() {
       try {
         let response = await this.axios.get('/import/result/' + this.importId)
@@ -104,20 +99,41 @@ export default {
         console.log(err)
       }
     },
-    getError() {
+
+    async getError(reject) {
       try {
-        this.axios.get('/import/errors/' + this.importId)
-        .then((response) => {
-          this.importError = response.data
+        let { data } = await this.axios.get('/import/errors/' + this.importId)
+        this.importError = data
+        console.log(this.importError);
+        return reject({
+          title: 'Error!',
+          body: this.importError,
+          config: {
+            closeOnClick: true
+          }
         })
-        return this.importError
       } catch (err) {
         console.log(err)
       }
+    },
+    async getIncorrectErrors() {
+      try {
+        let { data } = await this.axios.get('/import/failure/' + this.importId)
+        this.failures = data
+        for (let item of Object.values(this.failures)) {
+          for(let error of Object.values(item.errors)){
+            this.$snotify.warning(error.column + error.message, 'Error in ' + item.row + ' row', {
+              timeout: 30000,
+              showProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true
+            });
+          }
+        }
+      } catch(err) {
+          console.log(err)
+      }
     }
-    // getFilename() {
-    //   return this.file.
-    // }
   }
 }
 </script>

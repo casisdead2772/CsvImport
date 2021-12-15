@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Error;
 use App\Service\EntityService\Error\ErrorService;
 use App\Service\EntityService\Message\MessageService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -41,5 +42,19 @@ class ImportController extends AbstractController {
     public function showMessageStatus(string $id, MessageService $messageService): JsonResponse {
 
         return $this->json($messageService->getStatusMessage($id));
+    }
+
+    /**
+     * @Route ("/import/failure/{id}", "import_result", methods={"GET"})
+     *
+     * @param string $id
+     * @param ErrorService $errorService
+     *
+     * @return JsonResponse
+     */
+    public function showImportFailures(string $id, ErrorService $errorService): JsonResponse {
+        $errorMessage = $errorService->getFailureMessage($id);
+
+        return $this->json(unserialize($errorMessage, ['allowed_classes' => false]));
     }
 }

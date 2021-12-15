@@ -2,6 +2,8 @@
 
 namespace App\Service\EntityService;
 
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+
 interface BaseImportInterface {
     /**
      * @param array $object
@@ -15,10 +17,8 @@ interface BaseImportInterface {
 
     /**
      * @param array $item
-     *
-     * @return bool
      */
-    public function getItemIsValid(array $item): bool;
+    public function getItemIsValid(array $item): ConstraintViolationListInterface;
 
     /**
      * @param array $item

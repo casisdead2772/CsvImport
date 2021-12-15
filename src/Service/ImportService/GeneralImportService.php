@@ -8,6 +8,7 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Validator\ConstraintViolation;
 
 class GeneralImportService {
     /**
@@ -63,10 +64,19 @@ class GeneralImportService {
             throw new InvalidArgumentException(sprintf('Excepted file headers: %s not founded', implode(', ', $notExistingHeaders)));
         }
 
-        //style for console
-        foreach ($itemsArray as $item) {
-            if (!$this->baseConfigInterface->getItemIsValid($item)) {
-                $arrayIncorrectItems[] = $item;
+        $count = 0;
+        foreach ($itemsArray as $row => $item) {
+            $violations = $this->baseConfigInterface->getItemIsValid($item);
+
+            if ($violations->count() > 0) {
+                $arrayIncorrectItems[$count]['item'] = $item;
+                $arrayIncorrectItems[$count]['row'] = $row + 2;
+                /** @var ConstraintViolation $error */
+                foreach ($this->baseConfigInterface->getItemIsValid($item) as $key => $error) {
+                    $arrayIncorrectItems[$count]['errors'][$key]['column'] = $error->getPropertyPath();
+                    $arrayIncorrectItems[$count]['errors'][$key]['message'] = $error->getMessage();
+                }
+                $count++;
 
                 continue;
             }

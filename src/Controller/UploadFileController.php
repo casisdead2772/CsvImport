@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Message\UploadNotification;
 use App\Messenger\UniqueIdStamp;
-use App\Service\EntityService\Message\MessageService;
 use App\Service\FileUploadService;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,7 +24,6 @@ class UploadFileController extends AbstractController {
      * @return Response
      */
     public function index(): Response {
-
         return $this->render('index.html.twig', [
             'controller_name' => 'UploadFileController',
         ]);
@@ -60,15 +58,15 @@ class UploadFileController extends AbstractController {
         );
 
         if ($violations->count() > 0) {
+
             return $this->json($violations, 400);
         }
 
         try {
             $filename = $fileUploader->upload($uploadedFile);
-            $envelope = $bus->dispatch(new UploadNotification($filename));
-            /** @var UniqueIdStamp $stamp */
-            $stamp = $envelope->last(UniqueIdStamp::class);
-            $id = $stamp->getUniqueId();
+            $uniqueIdStamp = new UniqueIdStamp();
+            $id = $uniqueIdStamp->getUniqueId();
+            $bus->dispatch(new UploadNotification($filename, $id), [$uniqueIdStamp]);
         } catch (InvalidArgumentException|FileException $e) {
 
             return $this->json($e->getMessage(), 400);
@@ -76,5 +74,4 @@ class UploadFileController extends AbstractController {
 
         return $this->json($id, Response::HTTP_OK);
     }
-
 }

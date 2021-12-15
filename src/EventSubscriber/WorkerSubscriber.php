@@ -1,8 +1,9 @@
 <?php
 
-namespace App\EventListener;
+namespace App\EventSubscriber;
 
 use App\Messenger\UniqueIdStamp;
+use App\Repository\MessageRepository;
 use App\Service\EntityService\Error\ErrorService;
 use App\Service\EntityService\Message\MessageService;
 use Psr\Log\LoggerInterface;
@@ -52,9 +53,8 @@ class WorkerSubscriber implements EventSubscriberInterface {
      */
     public function onWorkerMessageHandledEvent(WorkerMessageHandledEvent $event): void {
         $id = $this->getMessageId($event);
-        $this->logger->info($event->getReceiverName());
 
-        $this->messageService->update($id, 2);
+        $this->messageService->update($id, MessageRepository::SUCCEED);
     }
 
     public function onSendMessageToTransportsEvent(SendMessageToTransportsEvent $event): void {
@@ -74,7 +74,7 @@ class WorkerSubscriber implements EventSubscriberInterface {
         ];
 
         $this->errorService->create($errorInfo);
-        $this->messageService->update($id, 1);
+        $this->messageService->update($id, MessageRepository::FAILED);
     }
 
     private function getMessageId($event): string {
