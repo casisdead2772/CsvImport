@@ -1,14 +1,28 @@
 <template>
   <div class="app">
-    <vue-snotify></vue-snotify>
+    <vue-snotify />
     <div class="row py-5 text-center justify-content-center">
       <h2>Import CSV file</h2>
-      <p class="lead">Example task for import</p>
+      <p class="lead">
+        Example task for import
+      </p>
       <div class="col-4">
         <div class="card p-2">
           <div class="form-group m-2">
-            <input type="file" id="file" ref="file" accept=".csv" v-on:change="handleFileUpload()"/>
-            <button :disabled="disabledButton" class="btn btn-primary" v-on:click="submitFile()">Submit</button>
+            <input
+              id="file"
+              ref="file"
+              type="file"
+              accept=".csv"
+              @change="handleFileUpload()"
+            >
+            <button
+              :disabled="disabledButton"
+              class="btn btn-primary"
+              @click="submitFile()"
+            >
+              Submit
+            </button>
           </div>
         </div>
       </div>
@@ -19,7 +33,7 @@
 <script>
 
 export default {
-  name: "App.vue",
+  name: "NotificationComponent",
   data: () => ({
     file: '',
     importId: '',
@@ -35,7 +49,7 @@ export default {
         let interval = setInterval(() => {
           this.getResult()
           // this.getError()
-          if (this.importStatus === 2 ) {
+          if (this.importStatus === 2) {
             this.getIncorrectErrors()
             clearInterval(interval);
             return resolve({
@@ -103,7 +117,6 @@ export default {
       try {
         let { data } = await this.axios.get('/import/errors/' + this.importId)
         this.importError = data
-        console.log(this.importError);
         return reject({
           title: 'Error!',
           body: this.importError,
@@ -115,6 +128,7 @@ export default {
         console.log(err)
       }
     },
+
     async getIncorrectErrors() {
       try {
         let { data } = await this.axios.get('/import/failure/' + this.importId)

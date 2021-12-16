@@ -28,7 +28,7 @@ trait TimestampTrait {
      * @return DateTime
      */
     public function getCreatedAt(): DateTime {
-        
+
         return $this->createdAt;
     }
 
