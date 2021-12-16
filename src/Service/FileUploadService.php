@@ -43,7 +43,6 @@ class FileUploadService {
      * @return string
      */
     public function getTargetDirectory(): string {
-
         return $this->targetDirectory;
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Error;
 use App\Service\EntityService\Error\ErrorService;
 use App\Service\EntityService\Message\MessageService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,7 +23,7 @@ class ImportController extends AbstractController {
         try {
             $errorMessage = $errorService->getLastMessageError($id);
         } catch (NotFoundHttpException $e) {
-
+            //
             return $this->json($e->getMessage(), Response::HTTP_NO_CONTENT);
         }
 
@@ -40,7 +39,7 @@ class ImportController extends AbstractController {
      * @return JsonResponse
      */
     public function showMessageStatus(string $id, MessageService $messageService): JsonResponse {
-
+        //
         return $this->json($messageService->getStatusMessage($id));
     }
 
@@ -54,7 +53,11 @@ class ImportController extends AbstractController {
      */
     public function showImportFailures(string $id, ErrorService $errorService): JsonResponse {
         $errorMessage = $errorService->getFailureMessage($id);
+        $unsuitedMessage = $errorService->getUnsuitedMessage($id);
 
-        return $this->json(unserialize($errorMessage, ['allowed_classes' => false]));
+        return $this->json([
+            'errors' => unserialize($errorMessage, ['allowed_classes' => false]),
+            'unsuited' => unserialize($unsuitedMessage, ['allowed_classes' => false])
+        ]);
     }
 }

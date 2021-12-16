@@ -115,6 +115,7 @@ class Product {
      * @return string
      */
     public function getCode(): string {
+
         return $this->code;
     }
 
@@ -129,6 +130,7 @@ class Product {
      * @return \DateTime|null
      */
     public function getAdded(): ?\DateTime {
+
         return $this->added;
     }
 
@@ -143,6 +145,7 @@ class Product {
      * @return \DateTime|null
      */
     public function getDiscontinued(): ?\DateTime {
+
         return $this->discontinued;
     }
 
@@ -157,6 +160,7 @@ class Product {
      * @return \DateTime
      */
     public function getTimestamp(): \DateTime {
+
         return $this->timestamp;
     }
 
@@ -172,6 +176,7 @@ class Product {
      * @return int
      */
     public function getStock(): int {
+
         return $this->stock;
     }
 
@@ -186,6 +191,7 @@ class Product {
      * @return int
      */
     public function getCost(): int {
+
         return $this->cost;
     }
 

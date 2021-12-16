@@ -70,7 +70,6 @@ export default {
         this.notification()
       } catch (err) {
         this.errors = err.response.data.detail
-
         this.$snotify.error(this.errors, 'Upload error', {
           timeout: 2000,
           pauseOnHover: true
@@ -119,7 +118,9 @@ export default {
     async getIncorrectErrors() {
       try {
         let { data } = await this.axios.get('/import/failure/' + this.importId)
-        this.failures = data
+        this.failures = data.errors
+        this.unsuited = data.unsuited
+
         for (let item of Object.values(this.failures)) {
           for(let error of Object.values(item.errors)){
             this.$snotify.warning(error.column + error.message, 'Error in ' + item.row + ' row', {
@@ -130,6 +131,19 @@ export default {
             });
           }
         }
+
+        for (let item of Object.values(this.unsuited)) {
+          for(let rules of Object.values(item.rules)){
+            this.$snotify.info(rules.column + rules.message, 'Missing in ' + item.row + ' row', {
+              timeout: 30000,
+              showProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              titleMaxLength: 30
+            });
+          }
+        }
+
       } catch(err) {
           console.log(err)
       }

@@ -14,7 +14,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @method Message[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class MessageRepository extends ServiceEntityRepository {
-
     public const SENT = 0;
 
     public const FAILED = 1;

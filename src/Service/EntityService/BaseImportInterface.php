@@ -17,13 +17,15 @@ interface BaseImportInterface {
 
     /**
      * @param array $item
+     *
+     * @return ConstraintViolationListInterface
      */
     public function getItemIsValid(array $item): ConstraintViolationListInterface;
 
     /**
      * @param array $item
      *
-     * @return bool
+     * @return ConstraintViolationListInterface
      */
-    public function getItemRulesIsValid(array $item): bool;
+    public function getItemRulesIsValid(array $item): ConstraintViolationListInterface;
 }

@@ -32,12 +32,18 @@ class UploadNotificationHandler implements MessageHandlerInterface {
         $messageId = $content->getId();
         $results = $this->productImportService->importByRules($fileName);
 
-        $stringError = serialize($results['arrayIncorrectItems']);
+        $error = serialize($results['arrayIncorrectItems']);
         $this->errorService->create([
             'message_id' => $messageId,
             'code' => ErrorRepository::CODE_INCORRECT_ITEM,
-            'message' => $stringError
+            'message' => $error
         ]);
 
+        $unsuited = serialize($results['arrayMissingItems']);
+        $this->errorService->create([
+            'message_id' => $messageId,
+            'code' => ErrorRepository::CODE_UNSUITED_ITEM,
+            'message' => $unsuited
+        ]);
     }
 }

@@ -40,12 +40,10 @@ class Error {
     private ?string $errorMessage;
 
     public function getId(): ?int {
-
         return $this->id;
     }
 
     public function getUserId(): ?int {
-
         return $this->userId;
     }
 
@@ -56,7 +54,6 @@ class Error {
     }
 
     public function getCode(): ?string {
-
         return $this->code;
     }
 
@@ -67,7 +64,6 @@ class Error {
     }
 
     public function getErrorMessage(): ?string {
-
         return $this->errorMessage;
     }
 
@@ -78,7 +74,6 @@ class Error {
     }
 
     public function getMessage(): ?Message {
-
         return $this->message;
     }
 

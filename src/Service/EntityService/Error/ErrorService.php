@@ -64,4 +64,15 @@ class ErrorService {
 
         return $this->errorRepository->getFailureByMessage($message)->getErrorMessage();
     }
+
+    /**
+     * @param $messageId
+     *
+     * @return string|null
+     */
+    public function getUnsuitedMessage($messageId): ?string {
+        $message = $this->messageRepository->getMessageById($messageId);
+
+        return $this->errorRepository->getUnsuitedByMessage($message)->getErrorMessage();
+    }
 }

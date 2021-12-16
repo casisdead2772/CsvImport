@@ -48,6 +48,7 @@ class GeneralImportService {
      */
     public function importByRules($fileName, bool $isTest = false): array {
         $itemsArray = $this->getCsvRowsAsArrays($fileName);
+        $arrayMissingItems = [];
         $countMissingItems = 0;
         $countSuccessItems = 0;
         $arrayIncorrectItems = [];
@@ -61,15 +62,16 @@ class GeneralImportService {
         }
 
         if (!empty($notExistingHeaders)) {
+
             throw new InvalidArgumentException(sprintf('Excepted file headers: %s not founded', implode(', ', $notExistingHeaders)));
         }
 
         $count = 0;
 
         foreach ($itemsArray as $row => $item) {
-            $violations = $this->baseConfigInterface->getItemIsValid($item);
+            $violationsValid = $this->baseConfigInterface->getItemIsValid($item);
 
-            if ($violations->count() > 0) {
+            if ($violationsValid->count() > 0) {
                 $arrayIncorrectItems[$count]['item'] = $item;
                 $arrayIncorrectItems[$count]['row'] = $row + 2;
                 /** @var ConstraintViolation $error */
@@ -84,7 +86,18 @@ class GeneralImportService {
                 continue;
             }
 
-            if (!$this->baseConfigInterface->getItemRulesIsValid($item)) {
+            $violationsRules = $this->baseConfigInterface->getItemRulesIsValid($item);
+
+            if ($violationsRules->count() > 0) {
+                $arrayMissingItems[$countMissingItems]['row'] = $row + 2;
+
+                /** @var ConstraintViolation $error */
+
+                foreach ($this->baseConfigInterface->getItemRulesIsValid($item) as $key => $rule) {
+                    $arrayMissingItems[$countMissingItems]['rules'][$key]['column'] = $rule->getPropertyPath();
+                    $arrayMissingItems[$countMissingItems]['rules'][$key]['message'] = $rule->getMessage();
+                }
+
                 $countMissingItems++;
 
                 continue;
@@ -96,7 +109,7 @@ class GeneralImportService {
 
             $countSuccessItems++;
         }
-        $results['countMissingItems'] = $countMissingItems;
+        $results['arrayMissingItems'] = $arrayMissingItems;
         $results['countSuccessItems'] = $countSuccessItems;
         $results['arrayIncorrectItems'] = $arrayIncorrectItems;
 

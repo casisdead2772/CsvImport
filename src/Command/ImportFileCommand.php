@@ -17,6 +17,9 @@ class ImportFileCommand extends Command {
      */
     protected static $defaultName = 'app:import';
 
+    /**
+     * @var ServiceImportFactory
+     */
     private ServiceImportFactory $factory;
 
 
@@ -25,7 +28,7 @@ class ImportFileCommand extends Command {
         parent::__construct();
     }
 
-    protected function configure() {
+    protected function configure(): void {
         $this->setDescription('Read CSV file')
             ->addArgument('filename', InputArgument::REQUIRED, 'File name')
             ->addArgument('importType', InputArgument::REQUIRED, 'Type import file')

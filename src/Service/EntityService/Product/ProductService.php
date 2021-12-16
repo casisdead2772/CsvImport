@@ -48,7 +48,7 @@ class ProductService implements BaseImportInterface {
         $selectedProduct->setStock((int)$object[self::STOCK]);
         $selectedProduct->setCost((int)((float)$object[self::COST_IN_GBP] * 100));
 
-        if ($object['Discontinued'] === 'yes' && !$selectedProduct->getDiscontinued()) {
+        if ($object[self::DISCONTINUED] === 'yes' && !$selectedProduct->getDiscontinued()) {
             $selectedProduct->setDiscontinued(new DateTime('now'));
         }
 
@@ -99,12 +99,24 @@ class ProductService implements BaseImportInterface {
     /**
      * @param array $item
      *
-     * @return bool
+     * @return ConstraintViolationListInterface
      */
-    public function getItemRulesIsValid(array $item): bool {
+    public function getItemRulesIsValid(array $item): ConstraintViolationListInterface {
         $costProduct = (int)((float)$item[self::COST_IN_GBP] * 100);
-        $itemImportRules = !(((int)$item[self::STOCK] < 10 && $costProduct < 5 * 100) || $costProduct > 1000 * 100);
+        $rules = [
+            'lowStockAndCost' => (int)$item[self::STOCK] < 10 && $costProduct < 5 * 100,
+            'highCost' => $costProduct > 1000 * 100
+        ];
 
-        return $itemImportRules;
+        $itemConstraint = new Assert\Collection([
+            'lowStockAndCost' => new Assert\IsFalse([
+                'message' => 'Unsuitable leftovers and price for this product'
+            ]),
+            'highCost' => new Assert\IsFalse([
+                'message' => 'Too high a price'
+            ])
+            ]);
+
+        return $this->validator->validate($rules, $itemConstraint);
     }
 }

@@ -6,17 +6,12 @@ use App\Messenger\UniqueIdStamp;
 use App\Repository\MessageRepository;
 use App\Service\EntityService\Error\ErrorService;
 use App\Service\EntityService\Message\MessageService;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\Event\SendMessageToTransportsEvent;
 use Symfony\Component\Messenger\Event\WorkerMessageFailedEvent;
 use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
 
 class WorkerSubscriber implements EventSubscriberInterface {
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
     /**
      * @var MessageService
      */
@@ -27,18 +22,15 @@ class WorkerSubscriber implements EventSubscriberInterface {
     private ErrorService $errorService;
 
     /**
-     * @param LoggerInterface $logger
      * @param MessageService $messageService
      * @param ErrorService $errorService
      */
-    public function __construct(LoggerInterface $logger, MessageService $messageService, ErrorService $errorService) {
-        $this->logger = $logger;
+    public function __construct(MessageService $messageService, ErrorService $errorService) {
         $this->messageService = $messageService;
         $this->errorService = $errorService;
     }
 
     public static function getSubscribedEvents(): array {
-
         return [
             WorkerMessageHandledEvent::class => 'onWorkerMessageHandledEvent',
             SendMessageToTransportsEvent::class => 'onSendMessageToTransportsEvent',
@@ -59,22 +51,23 @@ class WorkerSubscriber implements EventSubscriberInterface {
 
     public function onSendMessageToTransportsEvent(SendMessageToTransportsEvent $event): void {
         $id = $this->getMessageId($event);
-        $this->logger->info("SendMessage from event $id");
 
         $this->messageService->create($id);
     }
 
     public function onWorkerMessageFailedEvent(WorkerMessageFailedEvent $event): void {
-        $id = $this->getMessageId($event);
-        $errors = $event->getThrowable();
-        $errorInfo = [
-            'code' => $errors->getCode(),
-            'message' => $errors->getMessage(),
-            'message_id' => $id
-        ];
+        if (!$event->willRetry()) {
+            $id = $this->getMessageId($event);
+            $errors = $event->getThrowable();
+            $errorInfo = [
+                'code' => $errors->getCode(),
+                'message' => $errors->getMessage(),
+                'message_id' => $id
+            ];
 
-        $this->errorService->create($errorInfo);
-        $this->messageService->update($id, MessageRepository::FAILED);
+            $this->errorService->create($errorInfo);
+            $this->messageService->update($id, MessageRepository::FAILED);
+        }
     }
 
     private function getMessageId($event): string {

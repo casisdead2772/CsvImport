@@ -5,7 +5,6 @@ namespace App\Service\EntityService\Message;
 use App\Entity\Message;
 use App\Repository\MessageRepository;
 use App\Traits\EntityManagerTrait;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessageService {
     use EntityManagerTrait;
@@ -51,9 +50,9 @@ class MessageService {
     /**
      * @param $messageId
      *
-     * @return int|null
+     * @return int
      */
-    public function getStatusMessage($messageId): ?int {
+    public function getStatusMessage($messageId): int {
 
         return $this->messageRepository->getMessageById($messageId)->getStatus();
     }
