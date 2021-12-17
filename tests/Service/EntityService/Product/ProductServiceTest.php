@@ -22,5 +22,9 @@ class ProductServiceTest extends KernelTestCase {
         $product = $productRepository->findOneBy(['code' => $newProject['Product Code']]);
 
         self::assertIsObject($product);
+        self::assertEquals('test', $product->getName());
+        self::assertEquals('001test', $product->getCode());
+        self::assertEquals(234, $product->getStock());
+        self::assertEquals('about test', $product->getDescription());
     }
 }

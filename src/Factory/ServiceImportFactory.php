@@ -21,13 +21,11 @@ class ServiceImportFactory {
      * @return GeneralImportService
      */
     public function createProductService(): GeneralImportService {
-
         return new GeneralImportService($this->productService);
     }
 
     public function getImportService($importType): GeneralImportService {
         if ($importType === self::PRODUCT) {
-
             return $this->createProductService();
         }
 

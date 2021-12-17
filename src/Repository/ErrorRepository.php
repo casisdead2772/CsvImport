@@ -33,7 +33,6 @@ class ErrorRepository extends ServiceEntityRepository {
         $lastError = $this->findOneBy(['message' => $message, 'code' => self::CODE_FAILED], ['id'=> 'DESC']);
 
         if (!$lastError) {
-
             throw new NotFoundHttpException('Errors for this message not founded');
         }
 
@@ -49,7 +48,6 @@ class ErrorRepository extends ServiceEntityRepository {
         $failures = $this->findOneBy(['message' => $message, 'code' => self::CODE_INCORRECT_ITEM]);
 
         if (!$failures) {
-
             throw new NotFoundHttpException('Failures for this message not founded');
         }
 
@@ -65,7 +63,6 @@ class ErrorRepository extends ServiceEntityRepository {
         $unsuited = $this->findOneBy(['message' => $message, 'code' => self::CODE_UNSUITED_ITEM]);
 
         if (!$unsuited) {
-
             throw new NotFoundHttpException('Unsuited for this message not founded');
         }
 

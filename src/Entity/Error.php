@@ -27,33 +27,33 @@ class Error {
     /**
      * @ORM\ManyToOne(targetEntity="Message", inversedBy="errors")
      */
-    private ?Message $message;
+    private Message $message;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      */
-    private ?string $code;
+    private string $code;
 
     /**
      * @ORM\Column(type="text")
      */
-    private ?string $errorMessage;
+    private string $errorMessage;
 
-    public function getId(): ?int {
+    public function getId(): int {
         return $this->id;
     }
 
-    public function getUserId(): ?int {
+    public function getUserId(): int {
         return $this->userId;
     }
 
-    public function setUserId(?int $userId): self {
+    public function setUserId(int $userId): self {
         $this->userId = $userId;
 
         return $this;
     }
 
-    public function getCode(): ?string {
+    public function getCode(): string {
         return $this->code;
     }
 

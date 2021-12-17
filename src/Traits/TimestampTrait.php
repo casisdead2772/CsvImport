@@ -5,30 +5,25 @@ namespace App\Traits;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\HasLifecycleCallbacks()
- */
 trait TimestampTrait {
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="created_at", type="datetime", nullable=true, columnDefinition="timestamp(6)")
+     * @ORM\Column(name="created_at", type="datetime", nullable=false, columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
      */
     protected DateTime $createdAt;
 
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="updated_at", type="datetime", nullable=true, columnDefinition="timestamp(6)")
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false, columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
      */
     protected DateTime $updatedAt;
-
 
     /**
      * @return DateTime
      */
     public function getCreatedAt(): DateTime {
-
         return $this->createdAt;
     }
 
@@ -36,7 +31,6 @@ trait TimestampTrait {
      * @return DateTime
      */
     public function getUpdatedAt(): DateTime {
-
         return $this->updatedAt;
     }
 
@@ -50,7 +44,8 @@ trait TimestampTrait {
     }
 
     /**
-     * @ORM\PreUpdate()
+     * @ORM\PreUpdate
+     * @ORM\PrePersist
      *
      * @return void
      */

@@ -53,7 +53,6 @@ class MessageService {
      * @return int
      */
     public function getStatusMessage($messageId): int {
-
         return $this->messageRepository->getMessageById($messageId)->getStatus();
     }
 }

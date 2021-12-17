@@ -23,10 +23,11 @@ class Message {
      * @ORM\Column(type="string", unique=true)
      */
     private string $messageId;
+
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="integer")
      */
-    private ?int $status;
+    private int $status;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -34,12 +35,10 @@ class Message {
     private ?int $userId;
 
     public function getId(): ?int {
-
         return $this->id;
     }
 
     public function getStatus(): ?int {
-
         return $this->status;
     }
 
@@ -50,7 +49,6 @@ class Message {
     }
 
     public function getUserId(): ?int {
-
         return $this->userId;
     }
 
@@ -64,7 +62,6 @@ class Message {
      * @return mixed
      */
     public function getMessageId() {
-
         return $this->messageId;
     }
 

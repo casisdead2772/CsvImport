@@ -23,7 +23,6 @@ class ImportController extends AbstractController {
         try {
             $errorMessage = $errorService->getLastMessageError($id);
         } catch (NotFoundHttpException $e) {
-            //
             return $this->json($e->getMessage(), Response::HTTP_NO_CONTENT);
         }
 
@@ -39,7 +38,6 @@ class ImportController extends AbstractController {
      * @return JsonResponse
      */
     public function showMessageStatus(string $id, MessageService $messageService): JsonResponse {
-        //
         return $this->json($messageService->getStatusMessage($id));
     }
 

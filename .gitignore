@@ -9,6 +9,7 @@
 /vendor/
 /storage/
 /.idea/
+/config/secrets/
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
@@ -35,3 +36,4 @@ yarn-error.log
 
 ###< ESlint ###
 /.eslintrc.js
+###< ESlint ###

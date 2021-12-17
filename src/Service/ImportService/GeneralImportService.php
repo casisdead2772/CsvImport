@@ -63,7 +63,6 @@ class GeneralImportService {
         }
 
         if (!empty($notExistingHeaders)) {
-
             throw new InvalidArgumentException(sprintf('Excepted file headers: %s not founded', implode(', ', $notExistingHeaders)));
         }
 
@@ -108,8 +107,10 @@ class GeneralImportService {
 
             $countSuccessItems++;
         }
+
         $results['arrayMissingItems'] = $arrayMissingItems;
         $results['countSuccessItems'] = $countSuccessItems;
+        $results['countMissingItems'] = $countMissingItems;
         $results['arrayIncorrectItems'] = $arrayIncorrectItems;
 
         return $results;

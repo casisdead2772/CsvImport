@@ -28,7 +28,6 @@ class MessageRepository extends ServiceEntityRepository {
         $message = $this->findOneBy(['messageId' => $id]);
 
         if (!$message) {
-
             throw new NotFoundHttpException('Message not founded');
         }
 

@@ -58,7 +58,6 @@ class UploadFileController extends AbstractController {
         );
 
         if ($violations->count() > 0) {
-            //
             return $this->json($violations, 400);
         }
 
@@ -68,7 +67,6 @@ class UploadFileController extends AbstractController {
             $id = $uniqueIdStamp->getUniqueId();
             $bus->dispatch(new ImportFile($filename, $id), [$uniqueIdStamp]);
         } catch (InvalidArgumentException|FileException $e) {
-            //
             return $this->json($e->getMessage(), 400);
         }
 

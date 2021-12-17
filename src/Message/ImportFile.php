@@ -19,7 +19,6 @@ class ImportFile {
      * @return string
      */
     public function getFile(): string {
-
         return $this->fileName;
     }
 
@@ -27,7 +26,6 @@ class ImportFile {
      * @return string
      */
     public function getId(): string {
-
         return $this->id;
     }
 }
