@@ -34,6 +34,8 @@ services:
         arguments: ['@App\Service\EntityService\Product\ProductService']
 
 
-    App\Service\ImportService\GeneralImportService: '@product_import_service'
+#    App\Service\ImportService\GeneralImportService: '@product_import_service'
 
-
+    App\MessageHandler\ImportFileHandler:
+        bind:
+            App\Service\ImportService\GeneralImportService: '@product_import_service'

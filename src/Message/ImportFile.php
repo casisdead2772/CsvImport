@@ -2,7 +2,7 @@
 
 namespace App\Message;
 
-class UploadNotification {
+class ImportFile {
     /**
      * @var string
      */
@@ -24,9 +24,9 @@ class UploadNotification {
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getId() {
+    public function getId(): string {
 
         return $this->id;
     }

@@ -33,5 +33,5 @@ npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
 
-###< friendsofphp/php-cs-fixer ###
+###< ESlint ###
 /.eslintrc.js

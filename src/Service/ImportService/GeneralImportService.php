@@ -51,6 +51,7 @@ class GeneralImportService {
         $arrayMissingItems = [];
         $countMissingItems = 0;
         $countSuccessItems = 0;
+        $countIncorrectItems = 0;
         $arrayIncorrectItems = [];
         $notExistingHeaders = [];
         $arrayHeaders = $this->baseConfigInterface->getItemHeaders();
@@ -66,22 +67,20 @@ class GeneralImportService {
             throw new InvalidArgumentException(sprintf('Excepted file headers: %s not founded', implode(', ', $notExistingHeaders)));
         }
 
-        $count = 0;
-
         foreach ($itemsArray as $row => $item) {
             $violationsValid = $this->baseConfigInterface->getItemIsValid($item);
 
             if ($violationsValid->count() > 0) {
-                $arrayIncorrectItems[$count]['item'] = $item;
-                $arrayIncorrectItems[$count]['row'] = $row + 2;
+                $arrayIncorrectItems[$countIncorrectItems]['item'] = $item;
+                $arrayIncorrectItems[$countIncorrectItems]['row'] = $row + 2;
                 /** @var ConstraintViolation $error */
 
                 foreach ($this->baseConfigInterface->getItemIsValid($item) as $key => $error) {
-                    $arrayIncorrectItems[$count]['errors'][$key]['column'] = $error->getPropertyPath();
-                    $arrayIncorrectItems[$count]['errors'][$key]['message'] = $error->getMessage();
+                    $arrayIncorrectItems[$countIncorrectItems]['errors'][$key]['column'] = $error->getPropertyPath();
+                    $arrayIncorrectItems[$countIncorrectItems]['errors'][$key]['message'] = $error->getMessage();
                 }
 
-                $count++;
+                $countIncorrectItems++;
 
                 continue;
             }

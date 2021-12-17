@@ -17,12 +17,12 @@ class Message {
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", unique=true)
      */
-    private $messageId;
+    private string $messageId;
     /**
      * @ORM\Column(type="integer", nullable=true)
      */

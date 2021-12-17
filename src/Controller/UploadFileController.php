@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Message\UploadNotification;
+use App\Message\ImportFile;
 use App\Messenger\UniqueIdStamp;
 use App\Service\FileUploadService;
 use InvalidArgumentException;
@@ -66,7 +66,7 @@ class UploadFileController extends AbstractController {
             $filename = $fileUploader->upload($uploadedFile);
             $uniqueIdStamp = new UniqueIdStamp();
             $id = $uniqueIdStamp->getUniqueId();
-            $bus->dispatch(new UploadNotification($filename, $id), [$uniqueIdStamp]);
+            $bus->dispatch(new ImportFile($filename, $id), [$uniqueIdStamp]);
         } catch (InvalidArgumentException|FileException $e) {
             //
             return $this->json($e->getMessage(), 400);

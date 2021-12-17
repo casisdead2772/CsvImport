@@ -2,13 +2,13 @@
 
 namespace App\MessageHandler;
 
-use App\Message\UploadNotification;
+use App\Message\ImportFile;
 use App\Repository\ErrorRepository;
 use App\Service\EntityService\Error\ErrorService;
 use App\Service\ImportService\GeneralImportService;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-class UploadNotificationHandler implements MessageHandlerInterface {
+class ImportFileHandler implements MessageHandlerInterface {
     /**
      * @var GeneralImportService
      */
@@ -25,9 +25,9 @@ class UploadNotificationHandler implements MessageHandlerInterface {
     }
 
     /**
-     * @param UploadNotification $content
+     * @param ImportFile $content
      */
-    public function __invoke(UploadNotification $content) {
+    public function __invoke(ImportFile $content) {
         $fileName = $content->getFile();
         $messageId = $content->getId();
         $results = $this->productImportService->importByRules($fileName);
