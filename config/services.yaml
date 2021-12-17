@@ -33,6 +33,6 @@ services:
         factory: ['@App\Factory\ServiceImportFactory', 'createProductService']
         arguments: ['@App\Service\EntityService\Product\ProductService']
 
-    App\Controller\UploadFileController:
+    App\MessageHandler\ImportFileHandler:
         bind:
             App\Service\ImportService\GeneralImportService: '@product_import_service'

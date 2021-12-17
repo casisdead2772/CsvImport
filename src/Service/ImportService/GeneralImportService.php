@@ -8,6 +8,7 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Validator\ConstraintViolation;
 
 class GeneralImportService {
     /**
@@ -30,7 +31,6 @@ class GeneralImportService {
     private function getCsvRowsAsArrays($inputFile) {
         //
         if (!file_exists($inputFile)) {
-
             throw new FileNotFoundException(sprintf('File %s not exists', $inputFile));
         }
         //use serializer for transfer csv to array
@@ -48,8 +48,10 @@ class GeneralImportService {
      */
     public function importByRules($fileName, bool $isTest = false): array {
         $itemsArray = $this->getCsvRowsAsArrays($fileName);
+        $arrayMissingItems = [];
         $countMissingItems = 0;
         $countSuccessItems = 0;
+        $countIncorrectItems = 0;
         $arrayIncorrectItems = [];
         $notExistingHeaders = [];
         $arrayHeaders = $this->baseConfigInterface->getItemHeaders();
@@ -61,19 +63,39 @@ class GeneralImportService {
         }
 
         if (!empty($notExistingHeaders)) {
-
             throw new InvalidArgumentException(sprintf('Excepted file headers: %s not founded', implode(', ', $notExistingHeaders)));
         }
 
-        //style for console
-        foreach ($itemsArray as $item) {
-            if (!$this->baseConfigInterface->getItemIsValid($item)) {
-                $arrayIncorrectItems[] = $item;
+        foreach ($itemsArray as $row => $item) {
+            $violationsValid = $this->baseConfigInterface->getItemIsValid($item);
+
+            if ($violationsValid->count() > 0) {
+                $arrayIncorrectItems[$countIncorrectItems]['item'] = $item;
+                $arrayIncorrectItems[$countIncorrectItems]['row'] = $row + 2;
+                /** @var ConstraintViolation $error */
+
+                foreach ($this->baseConfigInterface->getItemIsValid($item) as $key => $error) {
+                    $arrayIncorrectItems[$countIncorrectItems]['errors'][$key]['column'] = $error->getPropertyPath();
+                    $arrayIncorrectItems[$countIncorrectItems]['errors'][$key]['message'] = $error->getMessage();
+                }
+
+                $countIncorrectItems++;
 
                 continue;
             }
 
-            if (!$this->baseConfigInterface->getItemRulesIsValid($item)) {
+            $violationsRules = $this->baseConfigInterface->getItemRulesIsValid($item);
+
+            if ($violationsRules->count() > 0) {
+                $arrayMissingItems[$countMissingItems]['row'] = $row + 2;
+
+                /** @var ConstraintViolation $error */
+
+                foreach ($this->baseConfigInterface->getItemRulesIsValid($item) as $key => $rule) {
+                    $arrayMissingItems[$countMissingItems]['rules'][$key]['column'] = $rule->getPropertyPath();
+                    $arrayMissingItems[$countMissingItems]['rules'][$key]['message'] = $rule->getMessage();
+                }
+
                 $countMissingItems++;
 
                 continue;
@@ -86,8 +108,9 @@ class GeneralImportService {
             $countSuccessItems++;
         }
 
-        $results['countMissingItems'] = $countMissingItems;
+        $results['arrayMissingItems'] = $arrayMissingItems;
         $results['countSuccessItems'] = $countSuccessItems;
+        $results['countMissingItems'] = $countMissingItems;
         $results['arrayIncorrectItems'] = $arrayIncorrectItems;
 
         return $results;
