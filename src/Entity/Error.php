@@ -20,11 +20,6 @@ class Error {
     private $id;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private ?int $userId;
-
-    /**
      * @ORM\ManyToOne(targetEntity="Message", inversedBy="errors")
      */
     private Message $message;
@@ -41,16 +36,6 @@ class Error {
 
     public function getId(): int {
         return $this->id;
-    }
-
-    public function getUserId(): int {
-        return $this->userId;
-    }
-
-    public function setUserId(int $userId): self {
-        $this->userId = $userId;
-
-        return $this;
     }
 
     public function getCode(): string {
@@ -73,11 +58,11 @@ class Error {
         return $this;
     }
 
-    public function getMessage(): ?Message {
+    public function getMessage(): Message {
         return $this->message;
     }
 
-    public function setMessage(?Message $message): self {
+    public function setMessage(Message $message): self {
         $this->message = $message;
 
         return $this;

@@ -29,11 +29,6 @@ class Message {
      */
     private int $status;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private ?int $userId;
-
     public function getId(): ?int {
         return $this->id;
     }
@@ -44,16 +39,6 @@ class Message {
 
     public function setStatus(?int $status): self {
         $this->status = $status;
-
-        return $this;
-    }
-
-    public function getUserId(): ?int {
-        return $this->userId;
-    }
-
-    public function setUserId(?int $userId): self {
-        $this->userId = $userId;
 
         return $this;
     }
