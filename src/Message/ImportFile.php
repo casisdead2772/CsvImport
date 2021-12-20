@@ -13,7 +13,6 @@ class ImportFile {
      */
     private string $id;
 
-
     public function __construct(string $fileName, string $id) {
         $this->fileName = $fileName;
         $this->id = $id;
