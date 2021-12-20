@@ -16,6 +16,7 @@ class WorkerSubscriber implements EventSubscriberInterface {
      * @var MessageService
      */
     private MessageService $messageService;
+
     /**
      * @var ErrorService
      */
@@ -30,11 +31,14 @@ class WorkerSubscriber implements EventSubscriberInterface {
         $this->errorService = $errorService;
     }
 
+    /**
+     * @return string[]
+     */
     public static function getSubscribedEvents(): array {
         return [
             WorkerMessageHandledEvent::class => 'onWorkerMessageHandledEvent',
             SendMessageToTransportsEvent::class => 'onSendMessageToTransportsEvent',
-            WorkerMessageFailedEvent::class => 'onWorkerMessageFailedEvent'
+            WorkerMessageFailedEvent::class => 'onWorkerMessageFailedEvent',
         ];
     }
 
@@ -49,12 +53,22 @@ class WorkerSubscriber implements EventSubscriberInterface {
         $this->messageService->update($id, MessageRepository::SUCCEED);
     }
 
+    /**
+     * @param SendMessageToTransportsEvent $event
+     *
+     * @return void
+     */
     public function onSendMessageToTransportsEvent(SendMessageToTransportsEvent $event): void {
         $id = $this->getMessageId($event);
 
         $this->messageService->create($id);
     }
 
+    /**
+     * @param WorkerMessageFailedEvent $event
+     *
+     * @return void
+     */
     public function onWorkerMessageFailedEvent(WorkerMessageFailedEvent $event): void {
         if (!$event->willRetry()) {
             $id = $this->getMessageId($event);
@@ -70,6 +84,11 @@ class WorkerSubscriber implements EventSubscriberInterface {
         }
     }
 
+    /**
+     * @param $event
+     *
+     * @return string
+     */
     private function getMessageId($event): string {
         /** @var UniqueIdStamp $uniqueIdStamp */
         $uniqueIdStamp = $event->getEnvelope()->last(UniqueIdStamp::class);

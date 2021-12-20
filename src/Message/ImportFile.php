@@ -7,6 +7,10 @@ class ImportFile {
      * @var string
      */
     public string $fileName;
+
+    /**
+     * @var string
+     */
     private string $id;
 
 

@@ -11,10 +11,18 @@ use Doctrine\Migrations\AbstractMigration;
  * Auto-generated Migration: Please modify to your needs!
  */
 final class Version20211217133753 extends AbstractMigration {
+    /**
+     * @return string
+     */
     public function getDescription(): string {
         return '';
     }
 
+    /**
+     * @param Schema $schema
+     *
+     * @return void
+     */
     public function up(Schema $schema): void {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE error (id INT AUTO_INCREMENT NOT NULL, message_id INT DEFAULT NULL, user_id INT DEFAULT NULL, code VARCHAR(255) NOT NULL, error_message LONGTEXT NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NUll, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NUll, INDEX IDX_5DDDBC71537A1329 (message_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -23,6 +31,11 @@ final class Version20211217133753 extends AbstractMigration {
         $this->addSql('ALTER TABLE error ADD CONSTRAINT FK_5DDDBC71537A1329 FOREIGN KEY (message_id) REFERENCES message (id)');
     }
 
+    /**
+     * @param Schema $schema
+     *
+     * @return void
+     */
     public function down(Schema $schema): void {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE error DROP FOREIGN KEY FK_5DDDBC71537A1329');
