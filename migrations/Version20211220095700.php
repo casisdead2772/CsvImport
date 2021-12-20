@@ -11,7 +11,6 @@ use Doctrine\Migrations\AbstractMigration;
  * Auto-generated Migration: Please modify to your needs!
  */
 final class Version20211220095700 extends AbstractMigration {
-
     /**
      * @param Schema $schema
      *

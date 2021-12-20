@@ -14,11 +14,11 @@ class ErrorService {
      * @var MessageRepository
      */
     private MessageRepository $messageRepository;
+
     /**
      * @var ErrorRepository
      */
     private ErrorRepository $errorRepository;
-
 
     public function __construct(MessageRepository $messageRepository, ErrorRepository $errorRepository) {
         $this->messageRepository = $messageRepository;

@@ -81,7 +81,6 @@ class ImportFileCommand extends Command {
             return Command::FAILURE;
         }
 
-
         return Command::SUCCESS;
     }
 }

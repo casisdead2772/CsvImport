@@ -29,6 +29,7 @@ class MessageRepository extends ServiceEntityRepository {
 
     /**
      * @param $id
+     *
      * @return Message
      */
     public function getMessageById($id): Message {
