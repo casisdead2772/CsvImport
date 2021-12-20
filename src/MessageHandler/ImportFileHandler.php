@@ -19,6 +19,10 @@ class ImportFileHandler implements MessageHandlerInterface {
      */
     private ErrorService $errorService;
 
+    /**
+     * @param GeneralImportService $productImportService
+     * @param ErrorService $errorService
+     */
     public function __construct(GeneralImportService $productImportService, ErrorService $errorService) {
         $this->productImportService = $productImportService;
         $this->errorService = $errorService;

@@ -7,6 +7,9 @@ use App\Service\EntityService\Product\ProductService;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ProductServiceTest extends KernelTestCase {
+    /**
+     * @return void
+     */
     public function testCreateOrUpdate(): void {
         $newProject = [
             'Product Name' => 'test',
