@@ -8,6 +8,7 @@ use InvalidArgumentException;
 
 class ServiceImportFactory {
     private const PRODUCT = 'product';
+    
     /**
      * @var ProductService
      */
