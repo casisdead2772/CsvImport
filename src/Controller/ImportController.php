@@ -55,7 +55,7 @@ class ImportController extends AbstractController {
 
         return $this->json([
             'errors' => unserialize($errorMessage, ['allowed_classes' => false]),
-            'unsuited' => unserialize($unsuitedMessage, ['allowed_classes' => false])
+            'unsuited' => unserialize($unsuitedMessage, ['allowed_classes' => false]),
         ]);
     }
 }
