@@ -20,10 +20,17 @@ class MessageRepository extends ServiceEntityRepository {
 
     public const SUCCEED = 2;
 
+    /**
+     * @param ManagerRegistry $registry
+     */
     public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, Message::class);
     }
 
+    /**
+     * @param $id
+     * @return Message
+     */
     public function getMessageById($id): Message {
         $message = $this->findOneBy(['messageId' => $id]);
 

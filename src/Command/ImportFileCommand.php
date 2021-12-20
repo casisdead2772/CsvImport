@@ -22,7 +22,9 @@ class ImportFileCommand extends Command {
      */
     private ServiceImportFactory $factory;
 
-
+    /**
+     * @param ServiceImportFactory $factory
+     */
     public function __construct(ServiceImportFactory $factory) {
         $this->factory = $factory;
         parent::__construct();

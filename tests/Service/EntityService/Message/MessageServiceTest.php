@@ -7,6 +7,9 @@ use App\Service\EntityService\Message\MessageService;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class MessageServiceTest extends KernelTestCase {
+    /**
+     * @return void
+     */
     public function testCreateMessage(): void {
         $testMessageId = uniqid('', true);
         $messageService = static::getContainer()->get(MessageService::class);

@@ -14,7 +14,6 @@ class MessageService {
      */
     private MessageRepository $messageRepository;
 
-
     public function __construct(MessageRepository $messageRepository) {
         $this->messageRepository = $messageRepository;
     }

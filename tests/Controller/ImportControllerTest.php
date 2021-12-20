@@ -17,6 +17,9 @@ class ImportControllerTest extends WebTestCase {
         $this->client = static::createClient();
     }
 
+    /**
+     * @return void
+     */
     public function testShowMessageStatus(): void {
         $messageRepository = $this->client->getContainer()->get('doctrine')->getRepository(Message::class);
         $messages = $messageRepository->findAll();

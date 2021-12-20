@@ -16,6 +16,9 @@ class UploadFileControllerTest extends WebTestCase {
         $this->client = static::createClient();
     }
 
+    /**
+     * @return void
+     */
     public function testIndex(): void {
         $this->client->request('GET', '/');
 
