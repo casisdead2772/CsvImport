@@ -96,6 +96,8 @@ export default {
       }));
     },
     async submitFile() {
+      this.$refs.file.value = ''
+      this.disabledButton = true
       this.importError = ''
       let formData = new FormData();
       formData.append('file', this.file);
@@ -110,6 +112,8 @@ export default {
         )
         localStorage.importId = response.data
         this.importId = response.data
+        this.file = ''
+        this.importStatus = -1
         this.notification()
       } catch (err) {
         this.errors = err.response.data.detail
@@ -127,6 +131,8 @@ export default {
           timeout: 20000,
           pauseOnHover: true
         });
+        this.$refs.file.value = '';
+        this.file = ''
       } else {
         this.disabledButton = false
       }
