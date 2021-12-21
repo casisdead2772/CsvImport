@@ -50,7 +50,7 @@ class UploadFileController extends AbstractController {
                     'message' => 'Please select a file to upload'
                     ]),
                 new Assert\File([
-                    'maxSize'           => '5000000',
+                    'maxSize'           => '128M',
                     'mimeTypes'         => 'text/plain',
                     'mimeTypesMessage'  => 'Please upload a valid CSV document'
                 ])
