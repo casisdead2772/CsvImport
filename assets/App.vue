@@ -6,9 +6,7 @@
       <vue-snotify />
 
       <div class="col-lg-6">
-        <div
-          class="card bg-light"
-        >
+        <div class="card bg-light">
           <h2 class="card-header dark text-white py-3">
             Import CSV file
           </h2>
