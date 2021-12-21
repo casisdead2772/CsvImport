@@ -1,15 +1,13 @@
 <template>
   <div class="container">
     <div
-      class="row h-50 align-items-center py-5 text-center justify-content-center"
-      style="min-height: 600px"
+      class="upload row h-50 align-items-center py-5 text-center justify-content-center"
     >
       <vue-snotify />
 
       <div class="col-lg-6">
         <div
           class="card bg-light"
-          style="min-height: 400px"
         >
           <h2 class="card-header dark text-white py-3">
             Import CSV file
@@ -63,13 +61,13 @@ export default {
   }),
   watch: {
     importStatusMounted: function (newStatus) {
-      if(parseInt(localStorage.importStatus) !== newStatus){
+      if (parseInt(localStorage.importStatus) !== newStatus) {
         this.notification()
       }
     }
   },
-  mounted(){
-    if(localStorage.importId) {
+  mounted() {
+    if (localStorage.importId) {
       this.importId = localStorage.importId
       this.getResult(true)
     }
@@ -126,7 +124,7 @@ export default {
 
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
-      if(!this.file || this.file.type !== 'text/csv'){
+      if (!this.file || this.file.type !== 'text/csv') {
         this.$snotify.error('Bad file', 'Upload error', {
           timeout: 20000,
           pauseOnHover: true
@@ -139,7 +137,7 @@ export default {
     async getResult(mount) {
       try {
         let response = await this.axios.get('/import/result/' + this.importId)
-        if(mount){
+        if (mount) {
           this.importStatusMounted = response.data
         } else {
           this.importStatus = response.data
@@ -173,7 +171,7 @@ export default {
         this.unsuited = data.unsuited
 
         for (let item of Object.values(this.failures)) {
-          for(let error of Object.values(item.errors)){
+          for (let error of Object.values(item.errors)) {
             this.$snotify.info(error.column + error.message, 'Error in ' + item.row + ' row', {
               timeout: 30000,
               showProgressBar: true,
@@ -184,7 +182,7 @@ export default {
         }
 
         for (let item of Object.values(this.unsuited)) {
-          for(let rules of Object.values(item.rules)){
+          for (let rules of Object.values(item.rules)) {
             this.$snotify.info(rules.column + rules.message, 'Missing in ' + item.row + ' row', {
               timeout: 30000,
               showProgressBar: true,
@@ -195,7 +193,7 @@ export default {
           }
         }
 
-      } catch(err) {
+      } catch (err) {
           console.log(err)
       }
     }
@@ -204,5 +202,11 @@ export default {
 </script>
 
 <style scoped>
+.card {
+  min-height: 400px
+}
 
+.upload {
+  min-height: 600px
+}
 </style>
