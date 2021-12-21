@@ -1,28 +1,45 @@
 <template>
-  <div class="app">
-    <vue-snotify />
-    <div class="row py-5 text-center justify-content-center">
-      <h2>Import CSV file</h2>
-      <p class="lead">
-        Example task for import
-      </p>
-      <div class="col-4">
-        <div class="card p-2">
-          <div class="form-group m-2">
-            <input
-              id="file"
-              ref="file"
-              type="file"
-              accept=".csv"
-              @change="handleFileUpload()"
-            >
-            <button
-              :disabled="disabledButton"
-              class="btn btn-primary"
-              @click="submitFile()"
-            >
-              Submit
-            </button>
+  <div class="container">
+    <div
+      class="row h-50 align-items-center py-5 text-center justify-content-center"
+      style="min-height: 600px"
+    >
+      <vue-snotify />
+
+      <div class="col-lg-6">
+        <div
+          class="card bg-light"
+          style="min-height: 400px"
+        >
+          <h2 class="card-header dark text-white py-3">
+            Import CSV file
+          </h2>
+          <div class="card-body">
+            <h3 class="card-title my-3">
+              Please select product file
+            </h3>
+            <div class="input-group px-2 py-4">
+              <input
+                id="file"
+                ref="file"
+                type="file"
+                class="form-control"
+                aria-label="Upload"
+                accept=".csv"
+                @change="handleFileUpload()"
+              >
+              <button
+                :disabled="disabledButton"
+                class="btn btn-primary"
+                type="button"
+                @click="submitFile()"
+              >
+                Upload
+              </button>
+            </div>
+            <p class="card-text lead m-3">
+              The uploaded file must have a CSV extension of no more than 128mb.
+            </p>
           </div>
         </div>
       </div>
@@ -37,21 +54,36 @@ export default {
   data: () => ({
     file: '',
     importId: '',
-    importStatus: 0,
+    importStatus: -1,
     errors: [],
     importError: '',
     disabledButton: true,
-    failures: []
+    failures: [],
+    importStatusMounted: -1,
   }),
+  watch: {
+    importStatusMounted: function (newStatus) {
+      if(parseInt(localStorage.importStatus) !== newStatus){
+        this.notification()
+      }
+    }
+  },
+  mounted(){
+    if(localStorage.importId) {
+      this.importId = localStorage.importId
+      this.getResult(true)
+    }
+  },
   methods: {
     notification() {
+      localStorage.importStatus = -1
       this.$snotify.async('Import file', 'In progress', () => new Promise((resolve, reject) => {
         let interval = setInterval(() => {
           this.getResult()
-          // this.getError()
           if (this.importStatus === 2) {
             this.getIncorrectErrors()
             clearInterval(interval);
+            localStorage.importStatus = 2
             return resolve({
               title: 'Success!',
               body: 'File successfully imported!',
@@ -61,13 +93,13 @@ export default {
             })
           } else if (this.importStatus === 1) {
             clearInterval(interval);
+            localStorage.importStatus = 1
             return this.getError(reject)
           }
-        }, 2000);
+        }, 300);
       }));
     },
     async submitFile() {
-      this.importStatus = 0
       this.importError = ''
       let formData = new FormData();
       formData.append('file', this.file);
@@ -80,12 +112,13 @@ export default {
               }
             }
         )
+        localStorage.importId = response.data
         this.importId = response.data
         this.notification()
       } catch (err) {
         this.errors = err.response.data.detail
         this.$snotify.error(this.errors, 'Upload error', {
-          timeout: 2000,
+          timeout: 20000,
           pauseOnHover: true
         });
       }
@@ -95,7 +128,7 @@ export default {
       this.file = this.$refs.file.files[0];
       if(!this.file || this.file.type !== 'text/csv'){
         this.$snotify.error('Bad file', 'Upload error', {
-          timeout: 2000,
+          timeout: 20000,
           pauseOnHover: true
         });
       } else {
@@ -103,10 +136,14 @@ export default {
       }
     },
 
-    async getResult() {
+    async getResult(mount) {
       try {
         let response = await this.axios.get('/import/result/' + this.importId)
-        this.importStatus = response.data
+        if(mount){
+          this.importStatusMounted = response.data
+        } else {
+          this.importStatus = response.data
+        }
       } catch (err) {
         this.errors = err
         console.log(err)
@@ -137,7 +174,7 @@ export default {
 
         for (let item of Object.values(this.failures)) {
           for(let error of Object.values(item.errors)){
-            this.$snotify.warning(error.column + error.message, 'Error in ' + item.row + ' row', {
+            this.$snotify.info(error.column + error.message, 'Error in ' + item.row + ' row', {
               timeout: 30000,
               showProgressBar: true,
               closeOnClick: true,

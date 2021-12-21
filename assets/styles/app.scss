@@ -1,4 +1,13 @@
 @import "~vue-snotify/styles/material";
 body {
-    background-color: lightgray;
+    background-color: lightgrey;
+}
+
+body,
+html {
+  height: 100%;
+}
+
+.dark {
+  background-color: #4c4c4c;
 }
