@@ -6,9 +6,7 @@
       <vue-snotify />
 
       <div class="col-lg-6">
-        <div
-          class="card bg-light"
-        >
+        <div class="card bg-light">
           <h2 class="card-header dark text-white py-3">
             Import CSV file
           </h2>
@@ -98,6 +96,8 @@ export default {
       }));
     },
     async submitFile() {
+      this.$refs.file.value = ''
+      this.disabledButton = true
       this.importError = ''
       let formData = new FormData();
       formData.append('file', this.file);
@@ -112,6 +112,8 @@ export default {
         )
         localStorage.importId = response.data
         this.importId = response.data
+        this.file = ''
+        this.importStatus = -1
         this.notification()
       } catch (err) {
         this.errors = err.response.data.detail
@@ -129,6 +131,8 @@ export default {
           timeout: 20000,
           pauseOnHover: true
         });
+        this.$refs.file.value = '';
+        this.file = ''
       } else {
         this.disabledButton = false
       }
