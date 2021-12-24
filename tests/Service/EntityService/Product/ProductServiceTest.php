@@ -30,7 +30,9 @@ class ProductServiceTest extends KernelTestCase {
 
     protected function setUp(): void {
         $this->productService = static::getContainer()->get(ProductService::class);
-        $this->productRepository = static::getContainer()->get('doctrine')->getRepository(Product::class);
+        $this->productRepository = static::getContainer()
+            ->get('doctrine')
+            ->getRepository(Product::class);
         $this->newCorrectProduct = [
             'Product Name' => 'test',
             'Product Code' => '001test',

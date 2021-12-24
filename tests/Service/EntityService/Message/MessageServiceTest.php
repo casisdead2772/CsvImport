@@ -34,7 +34,9 @@ class MessageServiceTest extends KernelTestCase {
     protected function setUp(): void {
         $this->testMessageId = uniqid('', true);
         $this->messageService = static::getContainer()->get(MessageService::class);
-        $this->messageRepository = static::getContainer()->get('doctrine')->getRepository(Message::class);
+        $this->messageRepository = static::getContainer()
+            ->get('doctrine')
+            ->getRepository(Message::class);
         $this->entityManager = static::getContainer()->get('doctrine')->getManager();
         $this->entityManager->beginTransaction();
     }

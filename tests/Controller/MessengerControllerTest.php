@@ -8,17 +8,19 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class MessengerControllerTest extends WebTestCase {
+
+
     /**
      * @var KernelBrowser
      */
     private KernelBrowser $client;
+
     /**
      * @var ObjectManager
      */
     private ObjectManager $entityManager;
 
     protected function setUp(): void {
-        parent::setUp();
         $this->client = static::createClient();
         $this->entityManager = static::getContainer()->get('doctrine')->getManager();
         $this->entityManager->beginTransaction();

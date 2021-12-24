@@ -26,7 +26,6 @@ class FileUploadServiceTest extends WebTestCase {
     private ?object $uploadFileService;
 
     private UploadedFile $uploadedFile;
-    private string $uploadedFilename;
 
     protected function setUp(): void {
         parent::setUp();
