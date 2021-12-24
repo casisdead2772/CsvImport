@@ -99,7 +99,7 @@ class ImportFileCommandTest extends TestCase {
         $this->commandTester->execute([]);
     }
 
-    public function testBadImportService(): void {
+    public function testImportServiceReturnEmpty(): void {
         $importService = $this->createMock(GeneralImportService::class);
         $importService->expects($this->once())
             ->method('importByRules')
@@ -123,6 +123,13 @@ class ImportFileCommandTest extends TestCase {
     public function testBadTypeArgument(): void {
         $this->assertEquals(Command::FAILURE, $this->commandTester->execute([
             'filename' => $this->filePath,
+            'importType' => 'Bad import type',
+        ]));
+    }
+
+    public function testBadFilePath(): void {
+        $this->assertEquals(Command::FAILURE, $this->commandTester->execute([
+            'filename' => '/bad/file',
             'importType' => 'Bad import type',
         ]));
     }
