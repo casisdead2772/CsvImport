@@ -6,6 +6,7 @@ use App\Entity\Error;
 use App\Repository\ErrorRepository;
 use App\Repository\MessageRepository;
 use App\Traits\EntityManagerTrait;
+use Doctrine\ORM\EntityNotFoundException;
 
 class ErrorService {
     use EntityManagerTrait;
@@ -28,9 +29,11 @@ class ErrorService {
     /**
      * @param mixed $error
      *
-     * @return void
+     * @return Error
+     *
+     * @throws EntityNotFoundException
      */
-    public function create($error): void {
+    public function create($error): Error {
         $message = $this->messageRepository->getMessageById($error['message_id']);
 
         $newError = new Error();
@@ -40,12 +43,16 @@ class ErrorService {
 
         $this->getEntityManager()->persist($newError);
         $this->getEntityManager()->flush();
+
+        return $newError;
     }
 
     /**
      * @param $messageId
      *
      * @return mixed|string
+     *
+     * @throws EntityNotFoundException
      */
     public function getLastMessageError($messageId) {
         $message = $this->messageRepository->getMessageById($messageId);

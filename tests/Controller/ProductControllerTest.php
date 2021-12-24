@@ -5,14 +5,13 @@ namespace App\Tests\Controller;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class UploadFileControllerTest extends WebTestCase {
+class ProductControllerTest extends WebTestCase {
     /**
      * @var KernelBrowser
      */
     private KernelBrowser $client;
 
     protected function setUp(): void {
-        parent::setUp();
         $this->client = static::createClient();
     }
 

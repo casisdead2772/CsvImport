@@ -4,13 +4,14 @@ namespace App\Controller;
 
 use App\Service\EntityService\Error\ErrorService;
 use App\Service\EntityService\Message\MessageService;
+use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ImportController extends AbstractController {
+class MessengerController extends AbstractController {
     /**
      * @Route("/import/errors/{id}", name="import_error", methods={"GET"})
      *
@@ -22,7 +23,7 @@ class ImportController extends AbstractController {
     public function showMessageError($id, ErrorService $errorService): JsonResponse {
         try {
             $errorMessage = $errorService->getLastMessageError($id);
-        } catch (NotFoundHttpException $e) {
+        } catch (EntityNotFoundException $e) {
             return $this->json($e->getMessage(), Response::HTTP_NO_CONTENT);
         }
 

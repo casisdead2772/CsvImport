@@ -3,6 +3,7 @@
 namespace App\Service\ImportService;
 
 use App\Service\EntityService\BaseImportInterface;
+use Doctrine\Migrations\Tools\Console\Exception\FileTypeNotSupported;
 use InvalidArgumentException;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
@@ -33,6 +34,10 @@ class GeneralImportService {
         if (!file_exists($inputFile)) {
             throw new FileNotFoundException(sprintf('File %s not exists', $inputFile));
         }
+
+        if (pathinfo($inputFile)['extension'] !== 'csv') {
+            throw new FileTypeNotSupported(sprintf('File %s not supported', $inputFile));
+        }
         //use serializer for transfer csv to array
         $decoder = new Serializer([new ObjectNormalizer()], [new CsvEncoder()]);
 
@@ -55,6 +60,10 @@ class GeneralImportService {
         $arrayIncorrectItems = [];
         $notExistingHeaders = [];
         $arrayHeaders = $this->baseConfigInterface->getItemHeaders();
+
+        if (empty($arrayHeaders)) {
+            throw new InvalidArgumentException('Excepted file headers not founded');
+        }
 
         foreach ($arrayHeaders as $header) {
             if (!array_key_exists($header, $itemsArray[0])) {

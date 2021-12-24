@@ -6,6 +6,7 @@ use App\Entity\Product;
 use App\Service\EntityService\BaseImportInterface;
 use App\Traits\EntityManagerTrait;
 use DateTime;
+use InvalidArgumentException;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -13,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ProductService implements BaseImportInterface {
     use EntityManagerTrait;
 
-    private const PRODUCT_HEADERS = [self::PRODUCT_NAME, self::PRODUCT_CODE, self::PRODUCT_DESCRIPTION, self::STOCK, self::COST_IN_GBP, self::DISCONTINUED];
+    public const PRODUCT_HEADERS = [self::PRODUCT_NAME, self::PRODUCT_CODE, self::PRODUCT_DESCRIPTION, self::STOCK, self::COST_IN_GBP, self::DISCONTINUED];
 
     private const PRODUCT_CODE = 'Product Code';
 
@@ -37,6 +38,7 @@ class ProductService implements BaseImportInterface {
      * @param array $object
      */
     public function createOrUpdate(array $object): void {
+        $this->checkItemHeaders($object);
         $productRepository = $this->getRepository(Product::class);
         $selectedProduct = $productRepository->findOneBy(['code' => $object[self::PRODUCT_CODE]]);
 
@@ -120,5 +122,22 @@ class ProductService implements BaseImportInterface {
             ]);
 
         return $this->validator->validate($rules, $itemConstraint);
+    }
+
+    /**
+     * @param $item
+     */
+    private function checkItemHeaders($item): void {
+        $notExistingHeaders = [];
+
+        foreach (self::PRODUCT_HEADERS as $header) {
+            if (!array_key_exists($header, $item)) {
+                $notExistingHeaders[] = $header;
+            }
+        }
+
+        if (!empty($notExistingHeaders)) {
+            throw new InvalidArgumentException('Required fields are missing');
+        }
     }
 }
