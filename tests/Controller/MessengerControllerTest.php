@@ -18,7 +18,6 @@ class MessengerControllerTest extends WebTestCase {
     private ObjectManager $entityManager;
 
     protected function setUp(): void {
-        parent::setUp();
         $this->client = static::createClient();
         $this->entityManager = static::getContainer()->get('doctrine')->getManager();
         $this->entityManager->beginTransaction();
