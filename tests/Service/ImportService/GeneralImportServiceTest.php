@@ -3,7 +3,6 @@
 namespace App\Tests\Service\ImportService;
 
 use App\Service\EntityService\BaseImportInterface;
-use App\Service\EntityService\Product\ProductService;
 use App\Service\ImportService\GeneralImportService;
 use Doctrine\Migrations\Tools\Console\Exception\FileTypeNotSupported;
 use InvalidArgumentException;
@@ -13,7 +12,7 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class GeneralImportServiceTest extends KernelTestCase {
     /**
-     * @var ProductService|MockObject
+     * @var MockObject
      */
     private $importService;
 
@@ -51,10 +50,10 @@ class GeneralImportServiceTest extends KernelTestCase {
         $file = fopen($this->testFileName, 'wb+');
 
         $testData = [
-            ProductService::PRODUCT_HEADERS,
-            ['P0001', 'TV', '32”', 'Tv', '10', '399.99'],
-            ['P0001', 'Test', '32”', 'Tv', '10', '399.99'],
-            ['P0001', 'TV', '32”', 'Tv', '10', '399.99'],
+            ['header1', 'header2', 'header3', 'header4'],
+            ['P0001', 'TV', '32”', 'Tv'],
+            ['P0002', 'Test', '32”', 'Tv'],
+            ['P0003', 'TV', '32”', 'Tv'],
         ];
 
         foreach ($testData as $fields) {
@@ -67,18 +66,6 @@ class GeneralImportServiceTest extends KernelTestCase {
         $this->validatorMock = $this->createMock(ConstraintViolationListInterface::class);
         $this->importInterface = $this->createMock(BaseImportInterface::class);
         $this->importService = new GeneralImportService($this->importInterface);
-    }
-
-    /**
-     * @return void
-     */
-    public function testImportProduct(): void {
-        $container = static::getContainer();
-        $productImportService = $container->get('product_import_service');
-        $result = $productImportService->importByRules($this->testFileName, true);
-        $this->assertArrayHasKey('countSuccessItems', $result);
-        $this->assertArrayHasKey('arrayIncorrectItems', $result);
-        $this->assertArrayHasKey('countMissingItems', $result);
     }
 
     public function testBadHeaders(): void {
@@ -108,6 +95,15 @@ class GeneralImportServiceTest extends KernelTestCase {
         file_put_contents($filename, 'bad test file');
         $this->expectException(FileTypeNotSupported::class);
         $this->importService->importByRules($filename);
+    }
+
+    public function testSuccessImportByRules(): void {
+        $this->importInterface->expects($this->once())
+            ->method('getItemHeaders')
+            ->willReturn(['header1', 'header2', 'header3', 'header4']);
+
+        $result = $this->importService->importByRules($this->testFileName);
+        self::assertNotEmpty($result);
     }
 
     public function tearDown(): void {

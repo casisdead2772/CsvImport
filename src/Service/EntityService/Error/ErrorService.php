@@ -3,6 +3,7 @@
 namespace App\Service\EntityService\Error;
 
 use App\Entity\Error;
+use App\Entity\Message;
 use App\Repository\ErrorRepository;
 use App\Repository\MessageRepository;
 use App\Traits\EntityManagerTrait;
@@ -12,21 +13,6 @@ class ErrorService {
     use EntityManagerTrait;
 
     /**
-     * @var MessageRepository
-     */
-    private MessageRepository $messageRepository;
-
-    /**
-     * @var ErrorRepository
-     */
-    private ErrorRepository $errorRepository;
-
-    public function __construct(MessageRepository $messageRepository, ErrorRepository $errorRepository) {
-        $this->messageRepository = $messageRepository;
-        $this->errorRepository = $errorRepository;
-    }
-
-    /**
      * @param mixed $error
      *
      * @return Error
@@ -34,7 +20,9 @@ class ErrorService {
      * @throws EntityNotFoundException
      */
     public function create($error): Error {
-        $message = $this->messageRepository->getMessageById($error['message_id']);
+        /** @var MessageRepository $messageRepository */
+        $messageRepository = $this->getRepository(Message::class);
+        $message = $messageRepository->getMessageById($error['message_id']);
 
         $newError = new Error();
         $newError->setCode($error['code']);
@@ -55,8 +43,13 @@ class ErrorService {
      * @throws EntityNotFoundException
      */
     public function getLastMessageError($messageId) {
-        $message = $this->messageRepository->getMessageById($messageId);
-        $lastError = $this->errorRepository->getLastErrorByMessage($message);
+        /** @var MessageRepository $messageRepository */
+        $messageRepository = $this->getRepository(Message::class);
+        $message = $messageRepository->getMessageById($messageId);
+
+        /** @var ErrorRepository $errorRepository */
+        $errorRepository = $this->getRepository(Error::class);
+        $lastError = $errorRepository->getLastErrorByMessage($message);
 
         return explode('failed: ', $lastError->getErrorMessage())[1];
     }
@@ -65,21 +58,35 @@ class ErrorService {
      * @param $messageId
      *
      * @return string|null
+     *
+     * @throws EntityNotFoundException
      */
-    public function getFailureMessage($messageId): ?string {
-        $message = $this->messageRepository->getMessageById($messageId);
+    public function getFailureMessage($messageId): string {
+        /** @var MessageRepository $messageRepository */
+        $messageRepository = $this->getRepository(Message::class);
+        $message = $messageRepository->getMessageById($messageId);
 
-        return $this->errorRepository->getFailureByMessage($message)->getErrorMessage();
+        /** @var ErrorRepository $errorRepository */
+        $errorRepository = $this->getRepository(Error::class);
+
+        return $errorRepository->getFailureByMessage($message)->getErrorMessage();
     }
 
     /**
      * @param $messageId
      *
-     * @return string|null
+     * @return string
+     *
+     * @throws EntityNotFoundException
      */
-    public function getUnsuitedMessage($messageId): ?string {
-        $message = $this->messageRepository->getMessageById($messageId);
+    public function getUnsuitedMessage($messageId): string {
+        /** @var MessageRepository $messageRepository */
+        $messageRepository = $this->getRepository(Message::class);
+        $message = $messageRepository->getMessageById($messageId);
 
-        return $this->errorRepository->getUnsuitedByMessage($message)->getErrorMessage();
+        /** @var ErrorRepository $errorRepository */
+        $errorRepository = $this->getRepository(Error::class);
+
+        return $errorRepository->getUnsuitedByMessage($message)->getErrorMessage();
     }
 }

@@ -24,7 +24,7 @@ trait EntityManagerTrait {
     /**
      * @return EntityManagerInterface
      */
-    private function getEntityManager(): EntityManagerInterface {
+    public function getEntityManager(): EntityManagerInterface {
         return $this->em;
     }
 
@@ -33,7 +33,7 @@ trait EntityManagerTrait {
      *
      * @return EntityRepository|ObjectRepository
      */
-    private function getRepository(string $object) {
+    public function getRepository(string $object) {
         return $this->em->getRepository($object);
     }
 }

@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ProductService implements BaseImportInterface {
     use EntityManagerTrait;
 
-    public const PRODUCT_HEADERS = [self::PRODUCT_NAME, self::PRODUCT_CODE, self::PRODUCT_DESCRIPTION, self::STOCK, self::COST_IN_GBP, self::DISCONTINUED];
+    private const PRODUCT_HEADERS = [self::PRODUCT_NAME, self::PRODUCT_CODE, self::PRODUCT_DESCRIPTION, self::STOCK, self::COST_IN_GBP, self::DISCONTINUED];
 
     private const PRODUCT_CODE = 'Product Code';
 

@@ -44,9 +44,6 @@ class FileUploadServiceTest extends WebTestCase {
         $this->uploadedFileFromRequest = $client->getRequest()->files->get('upload_file');
     }
 
-    /**
-     * @return void
-     */
     public function testUpload(): void {
         $this->filePath = $this->uploadFileService->upload($this->uploadedFileFromRequest);
         assertFileExists($this->filePath);

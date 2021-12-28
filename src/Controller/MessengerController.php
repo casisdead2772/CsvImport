@@ -8,7 +8,6 @@ use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class MessengerController extends AbstractController {
@@ -39,7 +38,11 @@ class MessengerController extends AbstractController {
      * @return JsonResponse
      */
     public function showMessageStatus(string $id, MessageService $messageService): JsonResponse {
-        return $this->json($messageService->getStatusMessage($id));
+        try {
+            return $this->json($messageService->getStatusMessage($id));
+        } catch (EntityNotFoundException $e) {
+            return $this->json($e->getMessage(), Response::HTTP_NO_CONTENT);
+        }
     }
 
     /**
@@ -51,8 +54,12 @@ class MessengerController extends AbstractController {
      * @return JsonResponse
      */
     public function showImportFailures(string $id, ErrorService $errorService): JsonResponse {
-        $errorMessage = $errorService->getFailureMessage($id);
-        $unsuitedMessage = $errorService->getUnsuitedMessage($id);
+        try {
+            $errorMessage = $errorService->getFailureMessage($id);
+            $unsuitedMessage = $errorService->getUnsuitedMessage($id);
+        } catch (EntityNotFoundException $e) {
+            return $this->json($e->getMessage(), Response::HTTP_NO_CONTENT);
+        }
 
         return $this->json([
             'errors' => unserialize($errorMessage, ['allowed_classes' => false]),
