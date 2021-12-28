@@ -7,7 +7,6 @@ use App\Entity\Message;
 use App\Repository\ErrorRepository;
 use App\Repository\MessageRepository;
 use App\Service\EntityService\Error\ErrorService;
-use Doctrine\Persistence\ObjectManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 

@@ -57,7 +57,7 @@ class ErrorService {
     /**
      * @param string $messageId
      *
-     * @return string|null
+     * @return string
      *
      * @throws EntityNotFoundException
      */

@@ -36,11 +36,16 @@ class GeneralImportServiceTest extends KernelTestCase {
      */
     private string $badFileName;
 
+    /**
+     * @var string
+     */
+    private string $currentDirectory;
+
     protected function setUp(): void {
         parent::setUp();
 
-        $currentDirectory = sprintf('%s/tests/storage/', getcwd());
-        $this->testFileName = sprintf('s%general_import_service_stock.csv', $currentDirectory);
+        $this->currentDirectory = sprintf('%s/tests/storage/', getcwd());
+        $this->testFileName = sprintf('s%general_import_service_stock.csv', $this->currentDirectory);
 
         $file = fopen($this->testFileName, 'wb+');
 
@@ -54,9 +59,6 @@ class GeneralImportServiceTest extends KernelTestCase {
         foreach ($testData as $fields) {
             fputcsv($file, $fields);
         }
-
-        $this->badFileName = sprintf('%sbadfile.notcsv', $currentDirectory);
-        file_put_contents($this->badFileName, 'bad test file');
 
         $this->validatorMock = $this->createMock(ConstraintViolationListInterface::class);
         $this->importInterface = $this->createMock(BaseImportInterface::class);
@@ -86,6 +88,9 @@ class GeneralImportServiceTest extends KernelTestCase {
     }
 
     public function testBadFileExtension(): void {
+        $badFileName = sprintf('%sbadfile.notcsv', $this->currentDirectory);
+        file_put_contents($badFileName, 'bad test file');
+
         $this->expectException(FileTypeNotSupported::class);
         $this->importService->importByRules($this->badFileName);
     }

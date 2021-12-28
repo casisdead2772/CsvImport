@@ -125,9 +125,9 @@ class ProductService implements BaseImportInterface {
     }
 
     /**
-     * @param $item
+     * @param array $item
      */
-    private function checkItemHeaders($item): void {
+    private function checkItemHeaders(array $item): void {
         $notExistingHeaders = [];
 
         foreach (self::PRODUCT_HEADERS as $header) {
