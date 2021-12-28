@@ -22,7 +22,6 @@ class MessageServiceTest extends KernelTestCase {
 
     protected function setUp(): void {
         $this->messageRepositoryMock = $this->createMock(MessageRepository::class);
-
         $this->messageServiceMock = $this->createPartialMock(MessageService::class, ['getRepository']);
 
         $this->messageServiceMock
@@ -32,9 +31,11 @@ class MessageServiceTest extends KernelTestCase {
 
     public function testGetStatusMessage(): void {
         $messageMock = $this->createMock(Message::class);
+
         $messageMock->expects($this->once())
             ->method('getStatus')
             ->willReturn(1);
+
         $this->messageRepositoryMock->expects($this->once())
             ->method('getMessageById')
             ->willReturn($messageMock);

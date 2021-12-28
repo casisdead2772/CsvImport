@@ -28,13 +28,13 @@ class MessageRepository extends ServiceEntityRepository {
     }
 
     /**
-     * @param $id
+     * @param string $id
      *
      * @return Message
      *
      * @throws EntityNotFoundException
      */
-    public function getMessageById($id): Message {
+    public function getMessageById(string $id): Message {
         $message = $this->findOneBy(['messageId' => $id]);
 
         if (!$message) {

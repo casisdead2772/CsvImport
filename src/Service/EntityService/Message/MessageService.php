@@ -11,7 +11,7 @@ class MessageService {
     use EntityManagerTrait;
 
     /**
-     * @param $messageId
+     * @param string $messageId
      *
      * @return void
      */
@@ -25,14 +25,14 @@ class MessageService {
     }
 
     /**
-     * @param $messageId
-     * @param $status
+     * @param string $messageId
+     * @param int $status
      *
      * @return void
      *
      * @throws EntityNotFoundException
      */
-    public function update($messageId, $status): void {
+    public function update(string $messageId, int $status): void {
         /** @var MessageRepository $messageRepository */
         $messageRepository = $this->getRepository(Message::class);
         $message = $messageRepository->getMessageById($messageId);
@@ -43,13 +43,13 @@ class MessageService {
     }
 
     /**
-     * @param $messageId
+     * @param string $messageId
      *
      * @return int
      *
      * @throws EntityNotFoundException
      */
-    public function getStatusMessage($messageId): int {
+    public function getStatusMessage(string $messageId): int {
         /** @var MessageRepository $messageRepository */
         $messageRepository = $this->getRepository(Message::class);
 

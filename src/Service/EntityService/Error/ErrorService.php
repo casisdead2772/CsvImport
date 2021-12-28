@@ -13,13 +13,13 @@ class ErrorService {
     use EntityManagerTrait;
 
     /**
-     * @param mixed $error
+     * @param array $error
      *
      * @return Error
      *
      * @throws EntityNotFoundException
      */
-    public function create($error): Error {
+    public function create(array $error): Error {
         /** @var MessageRepository $messageRepository */
         $messageRepository = $this->getRepository(Message::class);
         $message = $messageRepository->getMessageById($error['message_id']);
@@ -36,13 +36,13 @@ class ErrorService {
     }
 
     /**
-     * @param $messageId
+     * @param string $messageId
      *
      * @return mixed|string
      *
      * @throws EntityNotFoundException
      */
-    public function getLastMessageError($messageId) {
+    public function getLastMessageError(string $messageId) {
         /** @var MessageRepository $messageRepository */
         $messageRepository = $this->getRepository(Message::class);
         $message = $messageRepository->getMessageById($messageId);
@@ -55,13 +55,13 @@ class ErrorService {
     }
 
     /**
-     * @param $messageId
+     * @param string $messageId
      *
      * @return string|null
      *
      * @throws EntityNotFoundException
      */
-    public function getFailureMessage($messageId): string {
+    public function getFailureMessage(string $messageId): string {
         /** @var MessageRepository $messageRepository */
         $messageRepository = $this->getRepository(Message::class);
         $message = $messageRepository->getMessageById($messageId);
@@ -73,13 +73,13 @@ class ErrorService {
     }
 
     /**
-     * @param $messageId
+     * @param string $messageId
      *
      * @return string
      *
      * @throws EntityNotFoundException
      */
-    public function getUnsuitedMessage($messageId): string {
+    public function getUnsuitedMessage(string $messageId): string {
         /** @var MessageRepository $messageRepository */
         $messageRepository = $this->getRepository(Message::class);
         $message = $messageRepository->getMessageById($messageId);

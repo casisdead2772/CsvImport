@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Error;
+use App\Entity\Message;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -25,45 +26,45 @@ class ErrorRepository extends ServiceEntityRepository {
     }
 
     /**
-     * @param $message
+     * @param Message $message
      *
      * @return Error
      */
-    public function getLastErrorByMessage($message): Error {
+    public function getLastErrorByMessage(Message $message): Error {
         $lastError = $this->findOneBy(['message' => $message, 'code' => self::CODE_FAILED], ['id'=> 'DESC']);
 
         if (!$lastError) {
-            throw new NotFoundHttpException('Errors for this message not founded');
+            throw new NotFoundHttpException('Errors for this message: %s not founded', $message->getMessageId());
         }
 
         return $lastError;
     }
 
     /**
-     * @param $message
+     * @param Message $message
      *
      * @return Error
      */
-    public function getFailureByMessage($message): Error {
+    public function getFailureByMessage(Message $message): Error {
         $failures = $this->findOneBy(['message' => $message, 'code' => self::CODE_INCORRECT_ITEM]);
 
         if (!$failures) {
-            throw new NotFoundHttpException('Failures for this message not founded');
+            throw new NotFoundHttpException('Failures for this message: %s not founded', $message->getMessageId());
         }
 
         return $failures;
     }
 
     /**
-     * @param $message
+     * @param Message $message
      *
      * @return Error
      */
-    public function getUnsuitedByMessage($message): Error {
+    public function getUnsuitedByMessage(Message $message): Error {
         $unsuited = $this->findOneBy(['message' => $message, 'code' => self::CODE_UNSUITED_ITEM]);
 
         if (!$unsuited) {
-            throw new NotFoundHttpException('Unsuited for this message not founded');
+            throw new NotFoundHttpException(sprintf('Unsuited for this message: %s not founded', $message->getMessageId()));
         }
 
         return $unsuited;

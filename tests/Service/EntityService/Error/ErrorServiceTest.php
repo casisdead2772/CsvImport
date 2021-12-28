@@ -13,11 +13,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ErrorServiceTest extends KernelTestCase {
     /**
-     * @var ObjectManager
-     */
-    private ObjectManager $entityManager;
-
-    /**
      * @var MessageRepository|MockObject
      */
     private $messageRepositoryMock;
@@ -33,8 +28,6 @@ class ErrorServiceTest extends KernelTestCase {
     private $errorServiceMock;
 
     protected function setUp(): void {
-        $this->entityManager = static::getContainer()->get('doctrine')->getManager();
-        $this->entityManager->beginTransaction();
         $this->messageRepositoryMock = $this->createMock(MessageRepository::class);
         $this->errorRepositoryMock = $this->createMock(ErrorRepository::class);
 
@@ -83,10 +76,5 @@ class ErrorServiceTest extends KernelTestCase {
             ->willReturn($errorMock);
 
         $this->errorServiceMock->getLastMessageError('test id');
-    }
-
-    protected function tearDown(): void {
-        $this->entityManager->getConnection()->rollback();
-        parent::tearDown();
     }
 }

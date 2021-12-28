@@ -29,11 +29,6 @@ class GeneralImportServiceTest extends KernelTestCase {
     /**
      * @var string
      */
-    private string $currentDirectory;
-
-    /**
-     * @var string
-     */
     private string $testFileName;
 
     /**
@@ -44,8 +39,8 @@ class GeneralImportServiceTest extends KernelTestCase {
     protected function setUp(): void {
         parent::setUp();
 
-        $this->currentDirectory = getcwd().'/tests/storage/';
-        $this->testFileName = $this->currentDirectory.'general_import_service_stock.csv';
+        $currentDirectory = sprintf('%s/tests/storage/', getcwd());
+        $this->testFileName = sprintf('s%general_import_service_stock.csv', $currentDirectory);
 
         $file = fopen($this->testFileName, 'wb+');
 
@@ -60,7 +55,7 @@ class GeneralImportServiceTest extends KernelTestCase {
             fputcsv($file, $fields);
         }
 
-        $this->badFileName = $this->currentDirectory.'badfile.notcsv';
+        $this->badFileName = sprintf('%sbadfile.notcsv', $currentDirectory);
         file_put_contents($this->badFileName, 'bad test file');
 
         $this->validatorMock = $this->createMock(ConstraintViolationListInterface::class);
@@ -91,10 +86,8 @@ class GeneralImportServiceTest extends KernelTestCase {
     }
 
     public function testBadFileExtension(): void {
-        $filename = $this->currentDirectory.'badfile.notcsv';
-        file_put_contents($filename, 'bad test file');
         $this->expectException(FileTypeNotSupported::class);
-        $this->importService->importByRules($filename);
+        $this->importService->importByRules($this->badFileName);
     }
 
     public function testSuccessImportByRules(): void {
@@ -103,7 +96,9 @@ class GeneralImportServiceTest extends KernelTestCase {
             ->willReturn(['header1', 'header2', 'header3', 'header4']);
 
         $result = $this->importService->importByRules($this->testFileName);
-        self::assertNotEmpty($result);
+        $this->assertArrayHasKey('countSuccessItems', $result);
+        $this->assertArrayHasKey('arrayIncorrectItems', $result);
+        $this->assertArrayHasKey('countMissingItems', $result);
     }
 
     public function tearDown(): void {
