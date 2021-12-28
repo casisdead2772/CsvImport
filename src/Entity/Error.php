@@ -34,34 +34,61 @@ class Error {
      */
     private string $errorMessage;
 
+    /**
+     * @return int
+     */
     public function getId(): int {
         return $this->id;
     }
 
+    /**
+     * @return string
+     */
     public function getCode(): string {
         return $this->code;
     }
 
-    public function setCode(?string $code): self {
+    /**
+     * @param string $code
+     *
+     * @return $this
+     */
+    public function setCode(string $code): self {
         $this->code = $code;
 
         return $this;
     }
 
-    public function getErrorMessage(): ?string {
+    /**
+     * @return string
+     */
+    public function getErrorMessage(): string {
         return $this->errorMessage;
     }
 
+    /**
+     * @param string $errorMessage
+     *
+     * @return $this
+     */
     public function setErrorMessage(string $errorMessage): self {
         $this->errorMessage = $errorMessage;
 
         return $this;
     }
 
+    /**
+     * @return Message
+     */
     public function getMessage(): Message {
         return $this->message;
     }
 
+    /**
+     * @param Message $message
+     *
+     * @return $this
+     */
     public function setMessage(Message $message): self {
         $this->message = $message;
 

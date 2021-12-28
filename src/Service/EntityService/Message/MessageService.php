@@ -5,21 +5,13 @@ namespace App\Service\EntityService\Message;
 use App\Entity\Message;
 use App\Repository\MessageRepository;
 use App\Traits\EntityManagerTrait;
+use Doctrine\ORM\EntityNotFoundException;
 
 class MessageService {
     use EntityManagerTrait;
 
     /**
-     * @var MessageRepository
-     */
-    private MessageRepository $messageRepository;
-
-    public function __construct(MessageRepository $messageRepository) {
-        $this->messageRepository = $messageRepository;
-    }
-
-    /**
-     * @param $messageId
+     * @param string $messageId
      *
      * @return void
      */
@@ -33,13 +25,17 @@ class MessageService {
     }
 
     /**
-     * @param $messageId
-     * @param $status
+     * @param string $messageId
+     * @param int $status
      *
      * @return void
+     *
+     * @throws EntityNotFoundException
      */
-    public function update($messageId, $status): void {
-        $message = $this->messageRepository->getMessageById($messageId);
+    public function update(string $messageId, int $status): void {
+        /** @var MessageRepository $messageRepository */
+        $messageRepository = $this->getRepository(Message::class);
+        $message = $messageRepository->getMessageById($messageId);
         $message->setStatus($status);
 
         $this->getEntityManager()->persist($message);
@@ -47,11 +43,16 @@ class MessageService {
     }
 
     /**
-     * @param $messageId
+     * @param string $messageId
      *
      * @return int
+     *
+     * @throws EntityNotFoundException
      */
-    public function getStatusMessage($messageId): int {
-        return $this->messageRepository->getMessageById($messageId)->getStatus();
+    public function getStatusMessage(string $messageId): int {
+        /** @var MessageRepository $messageRepository */
+        $messageRepository = $this->getRepository(Message::class);
+
+        return $messageRepository->getMessageById($messageId)->getStatus();
     }
 }

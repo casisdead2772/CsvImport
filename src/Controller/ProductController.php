@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class UploadFileController extends AbstractController {
+class ProductController extends AbstractController {
     /**
      * @Route("/", name="upload_file", methods={"GET"})
      *
@@ -25,7 +25,7 @@ class UploadFileController extends AbstractController {
      */
     public function index(): Response {
         return $this->render('index.html.twig', [
-            'controller_name' => 'UploadFileController',
+            'controller_name' => 'ProductController',
         ]);
     }
 

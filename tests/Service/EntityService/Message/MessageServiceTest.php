@@ -3,20 +3,43 @@
 namespace App\Tests\Service\EntityService\Message;
 
 use App\Entity\Message;
+use App\Repository\MessageRepository;
 use App\Service\EntityService\Message\MessageService;
+use Doctrine\Persistence\ObjectRepository;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class MessageServiceTest extends KernelTestCase {
     /**
-     * @return void
+     * @var MessageRepository|ObjectRepository
      */
-    public function testCreateMessage(): void {
-        $testMessageId = uniqid('', true);
-        $messageService = static::getContainer()->get(MessageService::class);
-        $messageRepository = static::getContainer()->get('doctrine')->getRepository(Message::class);
-        $messageService->create($testMessageId);
-        $message = $messageRepository->findOneBy(['messageId' => $testMessageId]);
+    private $messageRepositoryMock;
 
-        self::assertEquals($testMessageId, $message->getMessageId());
+    /**
+     * @var MessageService|MockObject
+     */
+    private $messageServiceMock;
+
+    protected function setUp(): void {
+        $this->messageRepositoryMock = $this->createMock(MessageRepository::class);
+        $this->messageServiceMock = $this->createPartialMock(MessageService::class, ['getRepository']);
+
+        $this->messageServiceMock
+            ->method('getRepository')
+            ->willReturn($this->messageRepositoryMock);
+    }
+
+    public function testGetStatusMessage(): void {
+        $messageMock = $this->createMock(Message::class);
+
+        $messageMock->expects($this->once())
+            ->method('getStatus')
+            ->willReturn(1);
+
+        $this->messageRepositoryMock->expects($this->once())
+            ->method('getMessageById')
+            ->willReturn($messageMock);
+
+        $this->messageServiceMock->getStatusMessage('');
     }
 }

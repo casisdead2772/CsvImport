@@ -2,16 +2,49 @@
 
 namespace App\Tests\Service\EntityService\Product;
 
-use App\Entity\Product;
 use App\Service\EntityService\Product\ProductService;
+use InvalidArgumentException;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProductServiceTest extends KernelTestCase {
     /**
-     * @return void
+     * @var array
      */
-    public function testCreateOrUpdate(): void {
-        $newProject = [
+    private array $newCorrectProduct;
+
+    /**
+     * @var array
+     */
+    private array $newIncorrectProject;
+
+    /**
+     * @var ProductService|MockObject
+     */
+    private $productServiceMock;
+
+    /**
+     * @var ProductService
+     */
+    private ProductService $productService;
+
+    /**
+     * @var MockObject|ConstraintViolationListInterface
+     */
+    private $violationsMock;
+
+    protected function setUp(): void {
+        $this->productServiceMock = $this->createPartialMock(ProductService::class, ['getRepository', 'getEntityManager']);
+        $validatorMock = $this->createMock(ValidatorInterface::class);
+        $this->productService = new ProductService($validatorMock);
+        $this->violationsMock = $this->createMock(ConstraintViolationListInterface::class);
+        $validatorMock
+            ->method('validate')
+            ->willReturn($this->violationsMock);
+
+        $this->newCorrectProduct = [
             'Product Name' => 'test',
             'Product Code' => '001test',
             'Product Description' => 'about test',
@@ -19,15 +52,43 @@ class ProductServiceTest extends KernelTestCase {
             'Cost in GBP' => '123',
             'Discontinued' => ''
         ];
-        $productService = static::getContainer()->get(ProductService::class);
-        $productRepository = static::getContainer()->get('doctrine')->getRepository(Product::class);
-        $productService->createOrUpdate($newProject);
-        $product = $productRepository->findOneBy(['code' => $newProject['Product Code']]);
 
-        self::assertIsObject($product);
-        self::assertEquals('test', $product->getName());
-        self::assertEquals('001test', $product->getCode());
-        self::assertEquals(234, $product->getStock());
-        self::assertEquals('about test', $product->getDescription());
+        $this->newIncorrectProject = [
+            'Incorrect field' => 'test',
+            'Product Code' => '001test',
+            'Product Description' => 'about test',
+            'Stock' => '234',
+            'Cost in GBP' => '123',
+            'Discontinued' => ''
+        ];
+    }
+
+    public function testCreateIncorrect(): void {
+        $this->expectException(InvalidArgumentException::class);
+        $this->productServiceMock->createOrUpdate($this->newIncorrectProject);
+    }
+
+    public function testGetIncorrectItemIsValid(): void {
+        $this->violationsMock->expects($this->once())
+            ->method('count')
+            ->willReturn(3);
+        $violations = $this->productService->getItemIsValid($this->newIncorrectProject);
+        self::assertNotCount(0, $violations);
+    }
+
+    public function testCorrectItemIsValid(): void {
+        $this->violationsMock->expects($this->once())
+            ->method('count')
+            ->willReturn(0);
+        $violations = $this->productService->getItemIsValid($this->newCorrectProduct);
+        self::assertCount(0, $violations);
+    }
+
+    public function testGetItemRulesIsValid(): void {
+        $this->violationsMock->expects($this->once())
+            ->method('count')
+            ->willReturn(0);
+        $violations = $this->productService->getItemRulesIsValid($this->newCorrectProduct);
+        self::assertCount(0, $violations);
     }
 }
