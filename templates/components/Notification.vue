@@ -1,11 +1,8 @@
 <template>
   <div class="container">
-    <div
-      class="upload row h-50 align-items-center py-5 text-center justify-content-center"
-    >
+    <div class="row align-items-center py-5 text-center justify-content-center">
       <vue-snotify />
-
-      <div class="col-lg-6">
+      <div class="col-lg-7">
         <div class="card bg-light">
           <h2 class="card-header dark text-white py-3">
             Import CSV file

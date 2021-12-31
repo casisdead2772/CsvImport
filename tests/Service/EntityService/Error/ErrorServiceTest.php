@@ -14,23 +14,33 @@ class ErrorServiceTest extends KernelTestCase {
     /**
      * @var MessageRepository|MockObject
      */
-    private $messageRepositoryMock;
+    private MockObject|MessageRepository $messageRepositoryMock;
 
     /**
      * @var ErrorRepository|MockObject
      */
-    private $errorRepositoryMock;
+    private ErrorRepository|MockObject $errorRepositoryMock;
 
     /**
      * @var ErrorService|MockObject
      */
-    private $errorServiceMock;
+    private ErrorService|MockObject $errorServiceMock;
+
+    /**
+     * @var MockObject|Error
+     */
+    private MockObject|Error $errorMock;
 
     protected function setUp(): void {
         $this->messageRepositoryMock = $this->createMock(MessageRepository::class);
         $this->errorRepositoryMock = $this->createMock(ErrorRepository::class);
+        $this->errorMock = $this->createMock(Error::class);
 
         $this->errorServiceMock = $this->createPartialMock(ErrorService::class, ['getRepository']);
+
+        $this->errorMock->expects($this->once())
+            ->method('getErrorMessage')
+            ->willReturn(serialize(['test result']));
 
         $this->errorServiceMock
             ->method('getRepository')
@@ -46,7 +56,8 @@ class ErrorServiceTest extends KernelTestCase {
             ->willReturn(new Message());
 
         $this->errorRepositoryMock->expects($this->once())
-            ->method('getUnsuitedByMessage');
+            ->method('getUnsuitedByMessage')
+            ->willReturn($this->errorMock);
 
         $this->errorServiceMock->getUnsuitedMessage('test id');
     }
@@ -56,24 +67,31 @@ class ErrorServiceTest extends KernelTestCase {
             ->method('getMessageById');
 
         $this->errorRepositoryMock->expects($this->once())
-            ->method('getFailureByMessage');
+            ->method('getFailureByMessage')
+            ->willReturn($this->errorMock);
 
         $this->errorServiceMock->getFailureMessage('test id');
     }
 
     public function testGetLastMessageError(): void {
+        $messageMock = $this->createMock(Message::class);
+
+        $messageMock->expects($this->once())
+            ->method('getStatus')
+            ->willReturn(1);
+
         $this->messageRepositoryMock->expects($this->once())
             ->method('getMessageById')
-            ->willReturn(new Message());
+            ->willReturn($messageMock);
 
-        $errorMock = $this->createMock(Error::class);
-        $errorMock
+        $this->errorMock
             ->method('getErrorMessage')
             ->willReturn('test failed: fail');
-        $this->errorRepositoryMock->expects($this->once())
-            ->method('getLastErrorByMessage')
-            ->willReturn($errorMock);
 
-        $this->errorServiceMock->getLastMessageError('test id');
+        $this->errorRepositoryMock
+            ->method('getLastErrorByMessage')
+            ->willReturn($this->errorMock);
+
+        $this->errorServiceMock->getMessageError('test id');
     }
 }

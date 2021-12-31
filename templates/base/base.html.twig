@@ -14,11 +14,12 @@
     {{ encore_entry_link_tags('app') }}
 </head>
 <body>
-{{ encore_entry_script_tags('app') }}
-<div class="container h-100">
-    <div id="app" class="row h-100">
-        <App></App>
+{% include 'base/navbar.html.twig' %}
+<main id="app">
+    <div class="container-fluid">
+        {% block body %} {% endblock %}
     </div>
-</div>
+</main>
+{{ encore_entry_script_tags('app') }}
 </body>
 </html>

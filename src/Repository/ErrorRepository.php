@@ -31,13 +31,13 @@ class ErrorRepository extends ServiceEntityRepository {
      * @return Error
      */
     public function getLastErrorByMessage(Message $message): Error {
-        $lastError = $this->findOneBy(['message' => $message, 'code' => self::CODE_FAILED], ['id'=> 'DESC']);
+        $messageError = $this->findOneBy(['message' => $message, 'code' => self::CODE_FAILED], ['id'=> 'DESC']);
 
-        if (!$lastError) {
-            throw new NotFoundHttpException('Errors for this message: %s not founded', $message->getMessageId());
+        if (!$messageError) {
+            throw new NotFoundHttpException(sprintf('Error for this message:%s not founded', $message->getId()));
         }
 
-        return $lastError;
+        return $messageError;
     }
 
     /**
@@ -46,13 +46,13 @@ class ErrorRepository extends ServiceEntityRepository {
      * @return Error
      */
     public function getFailureByMessage(Message $message): Error {
-        $failures = $this->findOneBy(['message' => $message, 'code' => self::CODE_INCORRECT_ITEM]);
+        $failedItems = $this->findOneBy(['message' => $message, 'code' => self::CODE_INCORRECT_ITEM]);
 
-        if (!$failures) {
-            throw new NotFoundHttpException('Failures for this message: %s not founded', $message->getMessageId());
+        if (!$failedItems) {
+            throw new NotFoundHttpException(sprintf('Failed items for this message:%s not founded', $message->getId()));
         }
 
-        return $failures;
+        return $failedItems;
     }
 
     /**
@@ -61,12 +61,12 @@ class ErrorRepository extends ServiceEntityRepository {
      * @return Error
      */
     public function getUnsuitedByMessage(Message $message): Error {
-        $unsuited = $this->findOneBy(['message' => $message, 'code' => self::CODE_UNSUITED_ITEM]);
+        $unsuitedItems = $this->findOneBy(['message' => $message, 'code' => self::CODE_UNSUITED_ITEM]);
 
-        if (!$unsuited) {
-            throw new NotFoundHttpException(sprintf('Unsuited for this message: %s not founded', $message->getMessageId()));
+        if (!$unsuitedItems) {
+            throw new NotFoundHttpException(sprintf('Unsuited items for this message:%s not founded', $message->getId()));
         }
 
-        return $unsuited;
+        return $unsuitedItems;
     }
 }

@@ -24,7 +24,7 @@ class ProductController extends AbstractController {
      * @return Response
      */
     public function index(): Response {
-        return $this->render('index.html.twig', [
+        return $this->render('import/productImport.twig', [
             'controller_name' => 'ProductController',
         ]);
     }
@@ -51,7 +51,7 @@ class ProductController extends AbstractController {
                     ]),
                 new Assert\File([
                     'maxSize'           => '128M',
-                    'mimeTypes'         => 'text/plain',
+                    'mimeTypes'         => 'application/csv',
                     'mimeTypesMessage'  => 'Please upload a valid CSV document'
                 ])
             ]

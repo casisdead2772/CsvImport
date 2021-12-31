@@ -11,3 +11,25 @@ html {
 .dark {
   background-color: #4c4c4c;
 }
+
+.page-link {
+  color: #4c4c4c;
+  box-shadow: none;
+}
+
+.page-item {
+  color: #4c4c4c;
+}
+
+.page-item.active .page-link {
+  background-color: #4c4c4c;
+  border-color: #4c4c4c;
+}
+
+.page-link:hover {
+    color: #4c4c4c;
+}
+
+.page-link:focus {
+    box-shadow: none;
+}
