@@ -29,8 +29,7 @@ class GeneralImportService {
      *
      * @return mixed
      */
-    private function getCsvRowsAsArrays($inputFile) {
-        //
+    private function getCsvRowsAsArrays($inputFile): mixed {
         if (!file_exists($inputFile)) {
             throw new FileNotFoundException(sprintf('File %s not exists', $inputFile));
         }

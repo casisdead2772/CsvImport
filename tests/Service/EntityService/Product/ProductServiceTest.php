@@ -23,7 +23,7 @@ class ProductServiceTest extends KernelTestCase {
     /**
      * @var ProductService|MockObject
      */
-    private $productServiceMock;
+    private MockObject|ProductService $productServiceMock;
 
     /**
      * @var ProductService
@@ -33,7 +33,7 @@ class ProductServiceTest extends KernelTestCase {
     /**
      * @var MockObject|ConstraintViolationListInterface
      */
-    private $violationsMock;
+    private MockObject|ConstraintViolationListInterface $violationsMock;
 
     protected function setUp(): void {
         $this->productServiceMock = $this->createPartialMock(ProductService::class, ['getRepository', 'getEntityManager']);

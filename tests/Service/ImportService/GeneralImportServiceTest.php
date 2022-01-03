@@ -34,11 +34,6 @@ class GeneralImportServiceTest extends KernelTestCase {
     /**
      * @var string
      */
-    private string $badFileName;
-
-    /**
-     * @var string
-     */
     private string $currentDirectory;
 
     protected function setUp(): void {
@@ -92,8 +87,12 @@ class GeneralImportServiceTest extends KernelTestCase {
         file_put_contents($badFileName, 'bad test file');
 
         $this->expectException(FileTypeNotSupported::class);
-        $this->importService->importByRules($badFileName);
-        unlink($badFileName);
+
+        try {
+            $this->importService->importByRules($badFileName);
+        } finally {
+            unlink($badFileName);
+        }
     }
 
     public function testSuccessImportByRules(): void {

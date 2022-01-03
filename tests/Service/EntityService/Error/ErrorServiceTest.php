@@ -9,6 +9,7 @@ use App\Repository\MessageRepository;
 use App\Service\EntityService\Error\ErrorService;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\HttpFoundation\Request;
 
 class ErrorServiceTest extends KernelTestCase {
     /**
@@ -24,7 +25,7 @@ class ErrorServiceTest extends KernelTestCase {
     /**
      * @var ErrorService|MockObject
      */
-    private ErrorService|MockObject $errorServiceMock;
+    private ErrorService|MockObject $errorServicePartialMock;
 
     /**
      * @var MockObject|Error
@@ -36,13 +37,15 @@ class ErrorServiceTest extends KernelTestCase {
         $this->errorRepositoryMock = $this->createMock(ErrorRepository::class);
         $this->errorMock = $this->createMock(Error::class);
 
-        $this->errorServiceMock = $this->createPartialMock(ErrorService::class, ['getRepository']);
+        $this->errorServicePartialMock = $this->createPartialMock(ErrorService::class, [
+            'getRepository',
+        ]);
 
-        $this->errorMock->expects($this->once())
+        $this->errorMock
             ->method('getErrorMessage')
             ->willReturn(serialize(['test result']));
 
-        $this->errorServiceMock
+        $this->errorServicePartialMock
             ->method('getRepository')
             ->willReturnMap([
                 [Error::class, $this->errorRepositoryMock],
@@ -59,7 +62,7 @@ class ErrorServiceTest extends KernelTestCase {
             ->method('getUnsuitedByMessage')
             ->willReturn($this->errorMock);
 
-        $this->errorServiceMock->getUnsuitedMessage('test id');
+        $this->errorServicePartialMock->getUnsuitedMessage('test id');
     }
 
     public function testGetFailureMessage(): void {
@@ -70,7 +73,7 @@ class ErrorServiceTest extends KernelTestCase {
             ->method('getFailureByMessage')
             ->willReturn($this->errorMock);
 
-        $this->errorServiceMock->getFailureMessage('test id');
+        $this->errorServicePartialMock->getFailureMessage('test id');
     }
 
     public function testGetLastMessageError(): void {
@@ -92,6 +95,6 @@ class ErrorServiceTest extends KernelTestCase {
             ->method('getLastErrorByMessage')
             ->willReturn($this->errorMock);
 
-        $this->errorServiceMock->getMessageError('test id');
+        $this->errorServicePartialMock->getMessageError('test id');
     }
 }

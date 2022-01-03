@@ -60,10 +60,10 @@ class ImportResultController extends AbstractController {
      * @throws NotFoundHttpException
      */
     public function showImportFailures(string $id, Request $request, ErrorService $errorService): Response {
-        $unsuited = $errorService->getMessageFailuresWithPaginate($id, $request);
+        $failures = $errorService->getMessageFailuresWithPaginate($id, $request);
 
         return $this->render('import/importData/failed.html.twig', [
-            'failures' => $unsuited,
+            'failures' => $failures,
         ]);
     }
 

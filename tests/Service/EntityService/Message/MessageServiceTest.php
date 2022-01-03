@@ -12,14 +12,14 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class MessageServiceTest extends KernelTestCase {
     /**
-     * @var MessageRepository|ObjectRepository
+     * @var MessageRepository|MockObject|ObjectRepository
      */
-    private $messageRepositoryMock;
+    private ObjectRepository|MockObject|MessageRepository $messageRepositoryMock;
 
     /**
      * @var MessageService|MockObject
      */
-    private $messageServiceMock;
+    private MessageService|MockObject $messageServiceMock;
 
     protected function setUp(): void {
         $this->messageRepositoryMock = $this->createMock(MessageRepository::class);

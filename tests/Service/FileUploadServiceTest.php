@@ -24,6 +24,9 @@ class FileUploadServiceTest extends WebTestCase {
      */
     private ?object $uploadFileService;
 
+    /**
+     * @var UploadedFile
+     */
     private UploadedFile $uploadedFile;
 
     protected function setUp(): void {

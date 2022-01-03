@@ -23,8 +23,18 @@ class Message {
      */
     private int $status;
 
+    /**
+     * @return string
+     */
     public function getId(): string {
         return $this->id;
+    }
+
+    /**
+     * @param string $id
+     */
+    public function setId(string $id): void {
+        $this->id = $id;
     }
 
     /**
@@ -43,12 +53,5 @@ class Message {
         $this->status = $status;
 
         return $this;
-    }
-
-    /**
-     * @param string $id
-     */
-    public function setId(string $id): void {
-        $this->id = $id;
     }
 }
