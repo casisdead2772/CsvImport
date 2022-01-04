@@ -38,7 +38,7 @@ class ImportResultController extends AbstractController {
      *
      * @throws NotFoundHttpException
      */
-    public function show(String $id, MessageService $messageService, ErrorService $errorService): Response {
+    public function show(string $id, MessageService $messageService, ErrorService $errorService): Response {
         $message = $messageService->getMessage($id);
         $error = $errorService->getMessageError($message->getId());
 

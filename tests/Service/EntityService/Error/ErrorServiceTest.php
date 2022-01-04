@@ -10,6 +10,7 @@ use App\Service\EntityService\Error\ErrorService;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ErrorServiceTest extends KernelTestCase {
     /**
@@ -96,5 +97,11 @@ class ErrorServiceTest extends KernelTestCase {
             ->willReturn($this->errorMock);
 
         $this->errorServicePartialMock->getMessageError('test id');
+    }
+
+    public function testGetAllMessagesWithPaginate(): void {
+        $errorService = self::getContainer()->get(ErrorService::class);
+        $this->expectException(NotFoundHttpException::class);
+        $errorService->getMessageUnsuitedWithPaginate('test', new Request());
     }
 }
