@@ -4,8 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Message;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @method Message|null find($id, $lockMode = null, $lockVersion = null)
@@ -28,17 +29,28 @@ class MessageRepository extends ServiceEntityRepository {
     }
 
     /**
+     * @return QueryBuilder
+     */
+    public function getAllOrderByCreated(): QueryBuilder {
+        $query = $this->createQueryBuilder('m')
+            ->where('m.status != 0')
+            ->orderBy('m.createdAt', 'DESC');
+
+        return $query;
+    }
+
+    /**
      * @param string $id
      *
      * @return Message
      *
-     * @throws EntityNotFoundException
+     * @throws NotFoundHttpException
      */
     public function getMessageById(string $id): Message {
-        $message = $this->findOneBy(['messageId' => $id]);
+        $message = $this->findOneBy(['id' => $id]);
 
         if (!$message) {
-            throw new EntityNotFoundException(sprintf('Message:%s not founded', $id));
+            throw new NotFoundHttpException(sprintf('Message:%s not founded', $id));
         }
 
         return $message;

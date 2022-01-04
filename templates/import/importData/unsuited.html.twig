@@ -1,0 +1,39 @@
+{% extends '/base/base.html.twig' %}
+{% block body %}
+    <div class="container py-5">
+        {% if unsuited is not empty  %}
+        <table class="table dark">
+            <thead>
+            <tr class="dark text-white">
+                <th scope="col">Row</th>
+                <th scope="col">Error</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for unsuit in unsuited %}
+                <tr class="bg-light">
+                    <th scope="row">{{ unsuit.row }}</th>
+                    <td>
+                        {% for rules in unsuit.rules %}
+                            <a>In column {{ rules.column }} :
+                                {{ rules.message }}</a>
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+            {% else %}
+                <div class="row justify-content-center">
+                    <div class="col-lg-6">
+                        <div class="card bg-secondary text-white p-3 m-3">
+                            <h1>No unsuited items for this message</h1>
+                        </div>
+                    </div>
+                </div>
+        {% endif %}
+        <div class="navigation">
+            {{ knp_pagination_render(unsuited) }}
+        </div>
+    </div>
+{% endblock %}

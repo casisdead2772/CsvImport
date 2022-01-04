@@ -12,29 +12,24 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class GeneralImportServiceTest extends KernelTestCase {
     /**
-     * @var MockObject
+     * @var GeneralImportService
      */
-    private $importService;
+    private GeneralImportService $importService;
 
     /**
      * @var BaseImportInterface|MockObject
      */
-    private $importInterface;
+    private MockObject|BaseImportInterface $importInterface;
 
     /**
      * @var MockObject|ConstraintViolationListInterface
      */
-    private $validatorMock;
+    private MockObject|ConstraintViolationListInterface $validatorMock;
 
     /**
      * @var string
      */
     private string $testFileName;
-
-    /**
-     * @var string
-     */
-    private string $badFileName;
 
     /**
      * @var string
@@ -92,7 +87,12 @@ class GeneralImportServiceTest extends KernelTestCase {
         file_put_contents($badFileName, 'bad test file');
 
         $this->expectException(FileTypeNotSupported::class);
-        $this->importService->importByRules($this->badFileName);
+
+        try {
+            $this->importService->importByRules($badFileName);
+        } finally {
+            unlink($badFileName);
+        }
     }
 
     public function testSuccessImportByRules(): void {
@@ -109,6 +109,5 @@ class GeneralImportServiceTest extends KernelTestCase {
     public function tearDown(): void {
         parent::tearDown();
         unlink($this->testFileName);
-        unlink($this->badFileName);
     }
 }

@@ -29,8 +29,7 @@ class GeneralImportService {
      *
      * @return mixed
      */
-    private function getCsvRowsAsArrays($inputFile) {
-        //
+    private function getCsvRowsAsArrays($inputFile): mixed {
         if (!file_exists($inputFile)) {
             throw new FileNotFoundException(sprintf('File %s not exists', $inputFile));
         }
@@ -84,7 +83,7 @@ class GeneralImportService {
                 /** @var ConstraintViolation $error */
 
                 foreach ($this->baseConfigInterface->getItemIsValid($item) as $key => $error) {
-                    $arrayIncorrectItems[$countIncorrectItems]['errors'][$key]['column'] = $error->getPropertyPath();
+                    $arrayIncorrectItems[$countIncorrectItems]['errors'][$key]['column'] = str_replace(['[', ']'], '', $error->getPropertyPath());
                     $arrayIncorrectItems[$countIncorrectItems]['errors'][$key]['message'] = $error->getMessage();
                 }
 
@@ -101,7 +100,7 @@ class GeneralImportService {
                 /** @var ConstraintViolation $error */
 
                 foreach ($this->baseConfigInterface->getItemRulesIsValid($item) as $key => $rule) {
-                    $arrayMissingItems[$countMissingItems]['rules'][$key]['column'] = $rule->getPropertyPath();
+                    $arrayMissingItems[$countMissingItems]['rules'][$key]['column'] = str_replace(['[', ']'], '', $rule->getPropertyPath());
                     $arrayMissingItems[$countMissingItems]['rules'][$key]['message'] = $rule->getMessage();
                 }
 

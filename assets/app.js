@@ -10,7 +10,7 @@ import './styles/app.scss';
 import './bootstrap';
 
 import Vue from 'vue'
-import App from './App.vue'
+import Notification from '/templates/components/Notification.vue'
 
 import axios from 'axios'
 import VueAxios from 'vue-axios'
@@ -21,6 +21,8 @@ Vue.use(Snotify)
 
 new Vue({
     el: '#app',
-    components: {App}
+    components: {
+        Notification
+    }
 })
 

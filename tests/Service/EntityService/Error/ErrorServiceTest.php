@@ -9,30 +9,44 @@ use App\Repository\MessageRepository;
 use App\Service\EntityService\Error\ErrorService;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ErrorServiceTest extends KernelTestCase {
     /**
      * @var MessageRepository|MockObject
      */
-    private $messageRepositoryMock;
+    private MockObject|MessageRepository $messageRepositoryMock;
 
     /**
      * @var ErrorRepository|MockObject
      */
-    private $errorRepositoryMock;
+    private ErrorRepository|MockObject $errorRepositoryMock;
 
     /**
      * @var ErrorService|MockObject
      */
-    private $errorServiceMock;
+    private ErrorService|MockObject $errorServicePartialMock;
+
+    /**
+     * @var MockObject|Error
+     */
+    private MockObject|Error $errorMock;
 
     protected function setUp(): void {
         $this->messageRepositoryMock = $this->createMock(MessageRepository::class);
         $this->errorRepositoryMock = $this->createMock(ErrorRepository::class);
+        $this->errorMock = $this->createMock(Error::class);
 
-        $this->errorServiceMock = $this->createPartialMock(ErrorService::class, ['getRepository']);
+        $this->errorServicePartialMock = $this->createPartialMock(ErrorService::class, [
+            'getRepository',
+        ]);
 
-        $this->errorServiceMock
+        $this->errorMock
+            ->method('getErrorMessage')
+            ->willReturn(serialize(['test result']));
+
+        $this->errorServicePartialMock
             ->method('getRepository')
             ->willReturnMap([
                 [Error::class, $this->errorRepositoryMock],
@@ -46,9 +60,10 @@ class ErrorServiceTest extends KernelTestCase {
             ->willReturn(new Message());
 
         $this->errorRepositoryMock->expects($this->once())
-            ->method('getUnsuitedByMessage');
+            ->method('getUnsuitedByMessage')
+            ->willReturn($this->errorMock);
 
-        $this->errorServiceMock->getUnsuitedMessage('test id');
+        $this->errorServicePartialMock->getUnsuitedMessage('test id');
     }
 
     public function testGetFailureMessage(): void {
@@ -56,24 +71,37 @@ class ErrorServiceTest extends KernelTestCase {
             ->method('getMessageById');
 
         $this->errorRepositoryMock->expects($this->once())
-            ->method('getFailureByMessage');
+            ->method('getFailureByMessage')
+            ->willReturn($this->errorMock);
 
-        $this->errorServiceMock->getFailureMessage('test id');
+        $this->errorServicePartialMock->getFailureMessage('test id');
     }
 
     public function testGetLastMessageError(): void {
+        $messageMock = $this->createMock(Message::class);
+
+        $messageMock->expects($this->once())
+            ->method('getStatus')
+            ->willReturn(1);
+
         $this->messageRepositoryMock->expects($this->once())
             ->method('getMessageById')
-            ->willReturn(new Message());
+            ->willReturn($messageMock);
 
-        $errorMock = $this->createMock(Error::class);
-        $errorMock
+        $this->errorMock
             ->method('getErrorMessage')
             ->willReturn('test failed: fail');
-        $this->errorRepositoryMock->expects($this->once())
-            ->method('getLastErrorByMessage')
-            ->willReturn($errorMock);
 
-        $this->errorServiceMock->getLastMessageError('test id');
+        $this->errorRepositoryMock
+            ->method('getLastErrorByMessage')
+            ->willReturn($this->errorMock);
+
+        $this->errorServicePartialMock->getMessageError('test id');
+    }
+
+    public function testGetAllMessagesWithPaginate(): void {
+        $errorService = self::getContainer()->get(ErrorService::class);
+        $this->expectException(NotFoundHttpException::class);
+        $errorService->getMessageUnsuitedWithPaginate('test', new Request());
     }
 }
