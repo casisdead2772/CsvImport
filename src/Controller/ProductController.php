@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Message\ImportFile;
+use App\Message\ImportProductFile;
 use App\Messenger\UniqueIdStamp;
 use App\Service\FileUploadService;
 use InvalidArgumentException;
@@ -65,7 +65,7 @@ class ProductController extends AbstractController {
             $filename = $fileUploader->upload($uploadedFile);
             $uniqueIdStamp = new UniqueIdStamp();
             $id = $uniqueIdStamp->getUniqueId();
-            $bus->dispatch(new ImportFile($filename, $id), [$uniqueIdStamp]);
+            $bus->dispatch(new ImportProductFile($filename, $id), [$uniqueIdStamp]);
         } catch (InvalidArgumentException|FileException $e) {
             return $this->json($e->getMessage(), 400);
         }

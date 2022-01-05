@@ -31,8 +31,9 @@ services:
     product_import_service:
         class: App\Service\ImportService\GeneralImportService
         factory: ['@App\Factory\ServiceImportFactory', 'createProductService']
-        arguments: ['@App\Service\EntityService\Product\ProductService']
+        arguments:
+            - '@App\Service\EntityService\Product\ProductService'
 
-    App\MessageHandler\ImportFileHandler:
+    App\MessageHandler\ImportProductFileHandler:
         bind:
             App\Service\ImportService\GeneralImportService: '@product_import_service'

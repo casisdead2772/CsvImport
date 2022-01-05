@@ -7,11 +7,8 @@ use App\Repository\MessageRepository;
 use App\Service\EntityService\Message\MessageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
-use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
-use Knp\Component\Pager\PaginatorInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\HttpFoundation\Request;
 
 class MessageServiceTest extends KernelTestCase {
     /**
@@ -78,12 +75,5 @@ class MessageServiceTest extends KernelTestCase {
             ->method('flush');
 
         $this->messageServiceMock->update('testId', 1);
-    }
-
-    public function testGetAllMessagesWithPaginate(): void {
-        $messageService = self::getContainer()->get(MessageService::class);
-        $paginator = $messageService->getAllMessagesWithPaginate(new Request());
-
-        $this->assertInstanceOf(SlidingPagination::class, $paginator);
     }
 }
