@@ -33,11 +33,8 @@
                 </div>
             </div>
             <div class="col-2">
-                <form method="GET" action="{{ path('imports', { page: app.request.get('page') }) }}">
-                    {% if app.request.get('page') is defined %}
-                    <input type="hidden" name="page" value="{{ app.request.get('page') }} ">
-                    {% endif %}
-                    <label for="import_type">Choose subject</label>
+                <form method="GET" action="{{ path('imports') }}">
+                    <label for="import_type">Choose type</label>
                     <select class="form-control mb-2" name="import_type">
                         <option selected value="">All Types</option>
                         {% for importType in importTypes %}

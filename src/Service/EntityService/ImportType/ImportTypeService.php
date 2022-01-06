@@ -9,6 +9,9 @@ use App\Traits\EntityManagerTrait;
 class ImportTypeService {
     use EntityManagerTrait;
 
+    /**
+     * @return array
+     */
     public function getAllImportTypes(): array {
         /** @var ImportTypeRepository $importTypeRepository */
         $importTypeRepository = $this->getRepository(ImportType::class);
