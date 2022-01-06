@@ -3,7 +3,6 @@
 namespace App\Tests\Service;
 
 use App\Service\FileUploadService;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -16,15 +15,18 @@ class FileUploadServiceTest extends WebTestCase {
     private string $filePath;
 
     /**
-     * @ORM\Column(type="string")
+     * @var mixed
      */
-    private $uploadedFileFromRequest;
+    private mixed $uploadedFileFromRequest;
 
     /**
      * @var object|null
      */
     private ?object $uploadFileService;
 
+    /**
+     * @var UploadedFile
+     */
     private UploadedFile $uploadedFile;
 
     protected function setUp(): void {

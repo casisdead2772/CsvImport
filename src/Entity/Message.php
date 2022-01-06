@@ -14,23 +14,27 @@ class Message {
     use TimestampTrait;
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string")
      */
-    private int $id;
-
-    /**
-     * @ORM\Column(type="string", unique=true)
-     */
-    private string $messageId;
+    private string $id;
 
     /**
      * @ORM\Column(type="integer")
      */
     private int $status;
 
-    public function getId(): int {
+    /**
+     * @return string
+     */
+    public function getId(): string {
         return $this->id;
+    }
+
+    /**
+     * @param string $id
+     */
+    public function setId(string $id): void {
+        $this->id = $id;
     }
 
     /**
@@ -49,19 +53,5 @@ class Message {
         $this->status = $status;
 
         return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getMessageId() {
-        return $this->messageId;
-    }
-
-    /**
-     * @param mixed $messageId
-     */
-    public function setMessageId($messageId): void {
-        $this->messageId = $messageId;
     }
 }

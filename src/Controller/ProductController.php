@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Message\ImportFile;
+use App\Message\ImportProductFile;
 use App\Messenger\UniqueIdStamp;
 use App\Service\FileUploadService;
 use InvalidArgumentException;
@@ -24,7 +24,7 @@ class ProductController extends AbstractController {
      * @return Response
      */
     public function index(): Response {
-        return $this->render('index.html.twig', [
+        return $this->render('import/productImport.twig', [
             'controller_name' => 'ProductController',
         ]);
     }
@@ -51,8 +51,8 @@ class ProductController extends AbstractController {
                     ]),
                 new Assert\File([
                     'maxSize'           => '128M',
-//                    'mimeTypes'         => 'text/plain',
-//                    'mimeTypesMessage'  => 'Please upload a valid CSV document'
+                    'mimeTypes'         => 'application/csv',
+                    'mimeTypesMessage'  => 'Please upload a valid CSV document'
                 ])
             ]
         );
@@ -65,7 +65,7 @@ class ProductController extends AbstractController {
             $filename = $fileUploader->upload($uploadedFile);
             $uniqueIdStamp = new UniqueIdStamp();
             $id = $uniqueIdStamp->getUniqueId();
-            $bus->dispatch(new ImportFile($filename, $id), [$uniqueIdStamp]);
+            $bus->dispatch(new ImportProductFile($filename, $id), [$uniqueIdStamp]);
         } catch (InvalidArgumentException|FileException $e) {
             return $this->json($e->getMessage(), 400);
         }

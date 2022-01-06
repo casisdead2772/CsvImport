@@ -3,6 +3,8 @@
 namespace App\Tests\Service\ImportService;
 
 use App\Service\EntityService\BaseImportInterface;
+use App\Service\EntityService\Error\ErrorService;
+use App\Service\EntityService\Message\MessageImport\MessageImportService;
 use App\Service\ImportService\GeneralImportService;
 use Doctrine\Migrations\Tools\Console\Exception\FileTypeNotSupported;
 use InvalidArgumentException;
@@ -12,29 +14,24 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class GeneralImportServiceTest extends KernelTestCase {
     /**
-     * @var MockObject
+     * @var GeneralImportService
      */
-    private $importService;
+    private GeneralImportService $importService;
 
     /**
      * @var BaseImportInterface|MockObject
      */
-    private $importInterface;
+    private MockObject|BaseImportInterface $importInterface;
 
     /**
      * @var MockObject|ConstraintViolationListInterface
      */
-    private $validatorMock;
+    private MockObject|ConstraintViolationListInterface $validatorMock;
 
     /**
      * @var string
      */
     private string $testFileName;
-
-    /**
-     * @var string
-     */
-    private string $badFileName;
 
     /**
      * @var string
@@ -62,7 +59,9 @@ class GeneralImportServiceTest extends KernelTestCase {
 
         $this->validatorMock = $this->createMock(ConstraintViolationListInterface::class);
         $this->importInterface = $this->createMock(BaseImportInterface::class);
-        $this->importService = new GeneralImportService($this->importInterface);
+        $messageImportService = $this->createMock(MessageImportService::class);
+        $errorService = $this->createMock(ErrorService::class);
+        $this->importService = new GeneralImportService($this->importInterface, $errorService, $messageImportService);
     }
 
     public function testBadHeaders(): void {
@@ -92,7 +91,12 @@ class GeneralImportServiceTest extends KernelTestCase {
         file_put_contents($badFileName, 'bad test file');
 
         $this->expectException(FileTypeNotSupported::class);
-        $this->importService->importByRules($this->badFileName);
+
+        try {
+            $this->importService->importByRules($badFileName);
+        } finally {
+            unlink($badFileName);
+        }
     }
 
     public function testSuccessImportByRules(): void {
@@ -109,6 +113,5 @@ class GeneralImportServiceTest extends KernelTestCase {
     public function tearDown(): void {
         parent::tearDown();
         unlink($this->testFileName);
-        unlink($this->badFileName);
     }
 }

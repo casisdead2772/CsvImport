@@ -5,7 +5,7 @@ namespace App\Service\EntityService\Message;
 use App\Entity\Message;
 use App\Repository\MessageRepository;
 use App\Traits\EntityManagerTrait;
-use Doctrine\ORM\EntityNotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessageService {
     use EntityManagerTrait;
@@ -15,9 +15,9 @@ class MessageService {
      *
      * @return void
      */
-    public function create($messageId): void {
+    public function create(string $messageId): void {
         $result = new Message();
-        $result->setMessageId($messageId);
+        $result->setId($messageId);
         $result->setStatus(MessageRepository::SENT);
 
         $this->getEntityManager()->persist($result);
@@ -30,7 +30,7 @@ class MessageService {
      *
      * @return void
      *
-     * @throws EntityNotFoundException
+     * @throws NotFoundHttpException
      */
     public function update(string $messageId, int $status): void {
         /** @var MessageRepository $messageRepository */
@@ -47,12 +47,26 @@ class MessageService {
      *
      * @return int
      *
-     * @throws EntityNotFoundException
+     * @throws NotFoundHttpException
      */
     public function getStatusMessage(string $messageId): int {
         /** @var MessageRepository $messageRepository */
         $messageRepository = $this->getRepository(Message::class);
 
         return $messageRepository->getMessageById($messageId)->getStatus();
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Message
+     *
+     * @throws NotFoundHttpException
+     */
+    public function getMessage(string $id): Message {
+        /** @var MessageRepository $messageRepository */
+        $messageRepository = $this->getRepository(Message::class);
+
+        return $messageRepository->getMessageById($id);
     }
 }

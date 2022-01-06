@@ -2,7 +2,10 @@
 
 namespace App\Service\ImportService;
 
+use App\Repository\ErrorRepository;
 use App\Service\EntityService\BaseImportInterface;
+use App\Service\EntityService\Error\ErrorService;
+use App\Service\EntityService\Message\MessageImport\MessageImportService;
 use Doctrine\Migrations\Tools\Console\Exception\FileTypeNotSupported;
 use InvalidArgumentException;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
@@ -18,10 +21,24 @@ class GeneralImportService {
     public BaseImportInterface $baseConfigInterface;
 
     /**
-     * @param BaseImportInterface $baseConfigInterface
+     * @var ErrorService
      */
-    public function __construct(BaseImportInterface $baseConfigInterface) {
+    private ErrorService $errorService;
+
+    /**
+     * @var MessageImportService
+     */
+    private MessageImportService $messageImportService;
+
+    /**
+     * @param BaseImportInterface $baseConfigInterface
+     * @param ErrorService $errorService
+     * @param MessageImportService $messageImportService
+     */
+    public function __construct(BaseImportInterface $baseConfigInterface, ErrorService $errorService, MessageImportService $messageImportService) {
         $this->baseConfigInterface = $baseConfigInterface;
+        $this->errorService = $errorService;
+        $this->messageImportService = $messageImportService;
     }
 
     /**
@@ -29,8 +46,7 @@ class GeneralImportService {
      *
      * @return mixed
      */
-    private function getCsvRowsAsArrays($inputFile) {
-        //
+    private function getCsvRowsAsArrays($inputFile): mixed {
         if (!file_exists($inputFile)) {
             throw new FileNotFoundException(sprintf('File %s not exists', $inputFile));
         }
@@ -84,7 +100,7 @@ class GeneralImportService {
                 /** @var ConstraintViolation $error */
 
                 foreach ($this->baseConfigInterface->getItemIsValid($item) as $key => $error) {
-                    $arrayIncorrectItems[$countIncorrectItems]['errors'][$key]['column'] = $error->getPropertyPath();
+                    $arrayIncorrectItems[$countIncorrectItems]['errors'][$key]['column'] = str_replace(['[', ']'], '', $error->getPropertyPath());
                     $arrayIncorrectItems[$countIncorrectItems]['errors'][$key]['message'] = $error->getMessage();
                 }
 
@@ -101,7 +117,7 @@ class GeneralImportService {
                 /** @var ConstraintViolation $error */
 
                 foreach ($this->baseConfigInterface->getItemRulesIsValid($item) as $key => $rule) {
-                    $arrayMissingItems[$countMissingItems]['rules'][$key]['column'] = $rule->getPropertyPath();
+                    $arrayMissingItems[$countMissingItems]['rules'][$key]['column'] = str_replace(['[', ']'], '', $rule->getPropertyPath());
                     $arrayMissingItems[$countMissingItems]['rules'][$key]['message'] = $rule->getMessage();
                 }
 
@@ -123,5 +139,29 @@ class GeneralImportService {
         $results['arrayIncorrectItems'] = $arrayIncorrectItems;
 
         return $results;
+    }
+
+    /**
+     * @param string $fileName
+     * @param string $messageId
+     * @param int $importType
+     */
+    public function importWithLog(string $fileName, string $messageId, int $importType): void {
+        $this->messageImportService->createIfNotExists($messageId, $importType);
+        $results = $this->importByRules($fileName);
+
+        $error = serialize($results['arrayIncorrectItems']);
+        $this->errorService->create([
+            'message_id' => $messageId,
+            'code' => ErrorRepository::CODE_INCORRECT_ITEM,
+            'message' => $error
+        ]);
+
+        $unsuited = serialize($results['arrayMissingItems']);
+        $this->errorService->create([
+            'message_id' => $messageId,
+            'code' => ErrorRepository::CODE_UNSUITED_ITEM,
+            'message' => $unsuited
+        ]);
     }
 }

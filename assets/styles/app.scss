@@ -2,6 +2,7 @@
 body {
     background-color: lightgrey;
 }
+$bg-primary: #4c4c4c;
 
 body,
 html {
@@ -10,4 +11,26 @@ html {
 
 .dark {
   background-color: #4c4c4c;
+}
+
+.page-link {
+  color: $bg-primary;
+  box-shadow: none;
+}
+
+.page-item {
+  color: $bg-primary;
+}
+
+.page-item.active .page-link {
+  background-color: $bg-primary;
+  border-color: $bg-primary;
+}
+
+.page-link:hover {
+    color: $bg-primary;
+}
+
+.page-link:focus {
+    box-shadow: none;
 }
