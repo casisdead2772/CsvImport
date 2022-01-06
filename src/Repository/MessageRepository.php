@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Message;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -26,17 +25,6 @@ class MessageRepository extends ServiceEntityRepository {
      */
     public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, Message::class);
-    }
-
-    /**
-     * @return QueryBuilder
-     */
-    public function getAllOrderByCreated(): QueryBuilder {
-        $query = $this->createQueryBuilder('m')
-            ->where('m.status != 0')
-            ->orderBy('m.createdAt', 'DESC');
-
-        return $query;
     }
 
     /**

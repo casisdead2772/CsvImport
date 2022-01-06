@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Service\EntityService\Error\ErrorService;
+use App\Service\EntityService\ImportType\ImportTypeService;
+use App\Service\EntityService\Message\MessageImport\MessageImportService;
 use App\Service\EntityService\Message\MessageService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,15 +17,18 @@ class ImportResultController extends AbstractController {
      * @Route("/import_results", name="imports", methods={"GET"})
      *
      * @param Request $request
-     * @param MessageService $messageService
+     * @param MessageImportService $messageImportService
+     * @param ImportTypeService $importTypeService
      *
      * @return Response
      */
-    public function index(Request $request, MessageService $messageService): Response {
-        $messages = $messageService->getAllMessagesWithPaginate($request);
+    public function index(Request $request, MessageImportService $messageImportService, ImportTypeService $importTypeService): Response {
+        $messages = $messageImportService->getAllImportsWithPaginate($request);
+        $importTypes = $importTypeService->getAllImportTypes();
 
         return $this->render('import/importResults.html.twig', [
             'messages' => $messages,
+            'importTypes' => $importTypes
         ]);
     }
 

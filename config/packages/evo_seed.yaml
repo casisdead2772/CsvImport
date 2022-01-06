@@ -1,0 +1,3 @@
+evo_seed:
+  directory: 'src/Command/Seeds/'
+  namespace: 'App\Command\Seeds'

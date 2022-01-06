@@ -3,6 +3,8 @@
 namespace App\Tests\Service\ImportService;
 
 use App\Service\EntityService\BaseImportInterface;
+use App\Service\EntityService\Error\ErrorService;
+use App\Service\EntityService\Message\MessageImport\MessageImportService;
 use App\Service\ImportService\GeneralImportService;
 use Doctrine\Migrations\Tools\Console\Exception\FileTypeNotSupported;
 use InvalidArgumentException;
@@ -57,7 +59,9 @@ class GeneralImportServiceTest extends KernelTestCase {
 
         $this->validatorMock = $this->createMock(ConstraintViolationListInterface::class);
         $this->importInterface = $this->createMock(BaseImportInterface::class);
-        $this->importService = new GeneralImportService($this->importInterface);
+        $messageImportService = $this->createMock(MessageImportService::class);
+        $errorService = $this->createMock(ErrorService::class);
+        $this->importService = new GeneralImportService($this->importInterface, $errorService, $messageImportService);
     }
 
     public function testBadHeaders(): void {

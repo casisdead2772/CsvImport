@@ -2,7 +2,10 @@
 
 namespace App\Service\ImportService;
 
+use App\Repository\ErrorRepository;
 use App\Service\EntityService\BaseImportInterface;
+use App\Service\EntityService\Error\ErrorService;
+use App\Service\EntityService\Message\MessageImport\MessageImportService;
 use Doctrine\Migrations\Tools\Console\Exception\FileTypeNotSupported;
 use InvalidArgumentException;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
@@ -18,10 +21,24 @@ class GeneralImportService {
     public BaseImportInterface $baseConfigInterface;
 
     /**
-     * @param BaseImportInterface $baseConfigInterface
+     * @var ErrorService
      */
-    public function __construct(BaseImportInterface $baseConfigInterface) {
+    private ErrorService $errorService;
+
+    /**
+     * @var MessageImportService
+     */
+    private MessageImportService $messageImportService;
+
+    /**
+     * @param BaseImportInterface $baseConfigInterface
+     * @param ErrorService $errorService
+     * @param MessageImportService $messageImportService
+     */
+    public function __construct(BaseImportInterface $baseConfigInterface, ErrorService $errorService, MessageImportService $messageImportService) {
         $this->baseConfigInterface = $baseConfigInterface;
+        $this->errorService = $errorService;
+        $this->messageImportService = $messageImportService;
     }
 
     /**
@@ -122,5 +139,29 @@ class GeneralImportService {
         $results['arrayIncorrectItems'] = $arrayIncorrectItems;
 
         return $results;
+    }
+
+    /**
+     * @param string $fileName
+     * @param string $messageId
+     * @param int $importType
+     */
+    public function importWithLog(string $fileName, string $messageId, int $importType): void {
+        $this->messageImportService->createIfNotExists($messageId, $importType);
+        $results = $this->importByRules($fileName);
+
+        $error = serialize($results['arrayIncorrectItems']);
+        $this->errorService->create([
+            'message_id' => $messageId,
+            'code' => ErrorRepository::CODE_INCORRECT_ITEM,
+            'message' => $error
+        ]);
+
+        $unsuited = serialize($results['arrayMissingItems']);
+        $this->errorService->create([
+            'message_id' => $messageId,
+            'code' => ErrorRepository::CODE_UNSUITED_ITEM,
+            'message' => $unsuited
+        ]);
     }
 }

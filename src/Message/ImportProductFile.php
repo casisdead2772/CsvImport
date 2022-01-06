@@ -2,7 +2,7 @@
 
 namespace App\Message;
 
-class ImportFile {
+class ImportProductFile {
     /**
      * @var string
      */

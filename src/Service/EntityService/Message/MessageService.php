@@ -5,22 +5,10 @@ namespace App\Service\EntityService\Message;
 use App\Entity\Message;
 use App\Repository\MessageRepository;
 use App\Traits\EntityManagerTrait;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\PaginatorInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessageService {
     use EntityManagerTrait;
-
-    /**
-     * @var PaginatorInterface
-     */
-    private PaginatorInterface $paginator;
-
-    public function __construct(PaginatorInterface $paginator) {
-        $this->paginator = $paginator;
-    }
 
     /**
      * @param string $messageId
@@ -69,34 +57,16 @@ class MessageService {
     }
 
     /**
-     * @param string $id
+     * @param string $messageId
      *
      * @return Message
      *
      * @throws NotFoundHttpException
      */
-    public function getMessage(string $id): Message {
+    public function getMessage(string $messageId): Message {
         /** @var MessageRepository $messageRepository */
         $messageRepository = $this->getRepository(Message::class);
 
-        return $messageRepository->getMessageById($id);
-    }
-
-    /**
-     * @param Request $request
-     *
-     * @return PaginationInterface
-     */
-    public function getAllMessagesWithPaginate(Request $request): PaginationInterface {
-        /** @var MessageRepository $messageRepository */
-        $messageRepository = $this->getRepository(Message::class);
-
-        $messages = $messageRepository->getAllOrderByCreated();
-
-        return $this->paginator->paginate(
-            $messages,
-            $request->query->getInt('page', 1),
-            10
-        );
+        return $messageRepository->getMessageById($messageId);
     }
 }

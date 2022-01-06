@@ -2,6 +2,8 @@
 
 namespace App\Factory;
 
+use App\Service\EntityService\Error\ErrorService;
+use App\Service\EntityService\Message\MessageImport\MessageImportService;
 use App\Service\EntityService\Product\ProductService;
 use App\Service\ImportService\GeneralImportService;
 use InvalidArgumentException;
@@ -15,17 +17,31 @@ class ServiceImportFactory {
     private ProductService $productService;
 
     /**
-     * @param ProductService $productService
+     * @var ErrorService
      */
-    public function __construct(ProductService $productService) {
+    private ErrorService $errorService;
+
+    /**
+     * @var MessageImportService
+     */
+    private MessageImportService $messageImportService;
+
+    /**
+     * @param ProductService $productService
+     * @param ErrorService $errorService
+     * @param MessageImportService $messageImportService
+     */
+    public function __construct(ProductService $productService, ErrorService $errorService, MessageImportService $messageImportService) {
         $this->productService = $productService;
+        $this->errorService = $errorService;
+        $this->messageImportService = $messageImportService;
     }
 
     /**
      * @return GeneralImportService
      */
     public function createProductService(): GeneralImportService {
-        return new GeneralImportService($this->productService);
+        return new GeneralImportService($this->productService, $this->errorService, $this->messageImportService);
     }
 
     /**
