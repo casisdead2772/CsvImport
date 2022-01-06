@@ -51,8 +51,8 @@ class ProductController extends AbstractController {
                     ]),
                 new Assert\File([
                     'maxSize'           => '128M',
-                    'mimeTypes'         => 'text/plain',
-                    'mimeTypesMessage'  => 'Please upload a valid CSV document'
+//                    'mimeTypes'         => 'text/plain',
+//                    'mimeTypesMessage'  => 'Please upload a valid CSV document'
                 ])
             ]
         );

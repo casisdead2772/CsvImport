@@ -21,6 +21,8 @@ Vue.use(Snotify)
 
 new Vue({
     el: '#app',
-    components: {App}
+    components: {
+        App
+    }
 })
 
