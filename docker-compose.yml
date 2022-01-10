@@ -43,5 +43,16 @@ services:
     ports:
       - '4306:3306'
 
+  rabbitmq3:
+    container_name: ${PROJECT_NAME}-rabbitmq
+    image: rabbitmq:3.8-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=myuser
+      - RABBITMQ_DEFAULT_PASS=mypassword
+    ports:
+      # AMQP protocol port
+      - '5673:5672'
+      # HTTP management UI
+      - '15673:15672'
 volumes:
   mysql:
