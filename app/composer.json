@@ -84,7 +84,10 @@
         ],
         "test": "phpunit",
         "messenger": "php bin/console messenger:consume -vv",
-        "fix" : "php-cs-fixer fix"
+        "fix" : "php-cs-fixer fix",
+        "clear": [
+            "@php bin/console cache:clear"
+        ]
     },
     "conflict": {
         "symfony/symfony": "*"
