@@ -20,7 +20,7 @@ class Error {
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Message", inversedBy="errors")
+     * @ORM\ManyToOne(targetEntity="Message")
      */
     private Message $message;
 

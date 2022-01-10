@@ -33,8 +33,13 @@
                 </div>
             </div>
             <div class="col-2">
+<<<<<<< HEAD
+                <form method="GET" action="{{ path('imports') }}">
+                    <label for="import_type">Choose type</label>
+=======
                 <form method="GET" action="{{ path('imports', { page: app.request.get('page') }) }}">
                     <label for="import_type">Choose subject</label>
+>>>>>>> eaffa338616e8d1708402f34743906a9826c9dea
                     <select class="form-control mb-2" name="import_type">
                         <option selected value="">All Types</option>
                         {% for importType in importTypes %}

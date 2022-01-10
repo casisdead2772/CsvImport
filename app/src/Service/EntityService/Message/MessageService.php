@@ -57,16 +57,16 @@ class MessageService {
     }
 
     /**
-     * @param string $id
+     * @param string $messageId
      *
      * @return Message
      *
      * @throws NotFoundHttpException
      */
-    public function getMessage(string $id): Message {
+    public function getMessage(string $messageId): Message {
         /** @var MessageRepository $messageRepository */
         $messageRepository = $this->getRepository(Message::class);
 
-        return $messageRepository->getMessageById($id);
+        return $messageRepository->getMessageById($messageId);
     }
 }
