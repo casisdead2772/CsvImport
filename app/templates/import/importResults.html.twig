@@ -1,48 +1,55 @@
 {% extends '/base/base.html.twig' %}
 {% block body %}
-    <div class="container py-5">
+    <div class="container py-2">
         <div class="row">
-            <div class="col-8 offset-2">
-                <table class="table dark table-striped table-hover table-bordered">
-                    <thead>
-                    <tr class="dark text-white">
-                        <th scope="col">ID</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Created At</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for messageInfo in messages %}
-                        <tr class="bg-light">
-                            <th scope="row">{{ messageInfo.message.id }}</th>
-                            {% if (messageInfo.message.status == 1) %}
-                                <td>Failure</td>
-                            {% elseif (messageInfo.message.status == 2) %}
-                                <td>Success</td>
-                            {% endif %}
-                            <td>{{ messageInfo.message.createdAt.format('d/m/Y') }}</td>
-                            <td><a href="{{ path('import_results', { 'id': messageInfo.message.id }) }}"
-                                   class="btn btn-outline-secondary">Show results</a></td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                <div class="navigation">
-                    {{ knp_pagination_render(messages) }}
-                </div>
-            </div>
-            <div class="col-2">
+            <div class="col-lg-2">
                 <form method="GET" action="{{ path('imports') }}">
-                    <label for="import_type">Choose type</label>
-                    <select class="form-control mb-2" name="import_type">
-                        <option selected value="">All Types</option>
-                        {% for importType in importTypes %}
-                            <option value={{ importType.id }} {% if(app.request.get('import_type') == importType.id) %} selected {% endif %}>{{ importType.name }}</option>
-                        {% endfor %}
-                    </select>
-                    <button type="submit" class="btn btn-light">Filter</button>
+                    <div class="card bg-light mb-2">
+                        <div class="card-header">Filter</div>
+                        <div class="form-group m-2">
+                            <label for="import_type">Choose type</label>
+                            <select class="form-control my-2" name="import_type">
+                                <option selected value="">All Types</option>
+                                {% for importType in importTypes %}
+                                    <option value={{ importType.id }} {% if(app.request.get('import_type') == importType.id) %} selected {% endif %}>{{ importType.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn dark text-white">Filter</button>
+                        </div>
+                    </div>
                 </form>
+            </div>
+            <div class="col-lg-10">
+                <div class="table-responsive-md">
+                    <table class="table table-responsive-md table-striped table-hover">
+                        <thead>
+                        <tr class="dark text-white">
+                            <th class="col-md-3" scope="col">ID</th>
+                            <th class="col-md-3" scope="col">Status</th>
+                            <th class="col-md-3" scope="col">Created At</th>
+                            <th class="col-md-3" scope="col">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for messageInfo in messages %}
+                            <tr class="bg-light">
+                                <td><p class="text-break">{{ messageInfo.message.id }}</p></td>
+                                {% if (messageInfo.message.status == 1) %}
+                                    <td>Failure</td>
+                                {% elseif (messageInfo.message.status == 2) %}
+                                    <td>Success</td>
+                                {% endif %}
+                                <td>{{ messageInfo.message.createdAt.format('d/m/Y') }}</td>
+                                <td><a href="{{ path('import_results', { 'id': messageInfo.message.id }) }}"
+                                       class="btn btn-outline-secondary">Show</a></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="navigation">
+                        {{ knp_pagination_render(messages) }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
