@@ -9,6 +9,8 @@
 import './styles/app.scss';
 import './bootstrap';
 
+import 'bootstrap/dist/js/bootstrap';
+
 import Vue from 'vue'
 import Notification from '/templates/components/Notification.vue'
 
@@ -16,6 +18,7 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 
 import Snotify from 'vue-snotify';
+
 Vue.use(VueAxios, axios)
 Vue.use(Snotify)
 

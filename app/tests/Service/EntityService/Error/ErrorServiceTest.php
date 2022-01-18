@@ -98,10 +98,4 @@ class ErrorServiceTest extends KernelTestCase {
 
         $this->errorServicePartialMock->getMessageError('test id');
     }
-
-    public function testGetAllMessagesWithPaginate(): void {
-        $errorService = self::getContainer()->get(ErrorService::class);
-        $this->expectException(NotFoundHttpException::class);
-        $errorService->getMessageUnsuitedWithPaginate('test', new Request());
-    }
 }
