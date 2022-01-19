@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class GeneralImportService {
     /**
@@ -70,11 +71,11 @@ class GeneralImportService {
     public function importByRules($fileName, bool $isTest = false): array {
         $itemsArray = $this->getCsvRowsAsArrays($fileName);
         $arrayMissingItems = [];
+        $arrayIncorrectItems = [];
+        $notExistingHeaders = [];
         $countMissingItems = 0;
         $countSuccessItems = 0;
         $countIncorrectItems = 0;
-        $arrayIncorrectItems = [];
-        $notExistingHeaders = [];
         $arrayHeaders = $this->baseConfigInterface->getItemHeaders();
 
         if (empty($arrayHeaders)) {
@@ -95,14 +96,7 @@ class GeneralImportService {
             $violationsValid = $this->baseConfigInterface->getItemIsValid($item);
 
             if ($violationsValid->count() > 0) {
-                $arrayIncorrectItems[$countIncorrectItems]['item'] = $item;
-                $arrayIncorrectItems[$countIncorrectItems]['row'] = $row + 2;
-                /** @var ConstraintViolation $error */
-
-                foreach ($this->baseConfigInterface->getItemIsValid($item) as $key => $error) {
-                    $arrayIncorrectItems[$countIncorrectItems]['errors'][$key]['column'] = preg_replace('/\[|]/','', $error->getPropertyPath());
-                    $arrayIncorrectItems[$countIncorrectItems]['errors'][$key]['message'] = $error->getMessage();
-                }
+                $arrayIncorrectItems[$countIncorrectItems] = $this->resultBuilder($violationsValid, 'errors', $row);
 
                 $countIncorrectItems++;
 
@@ -112,14 +106,7 @@ class GeneralImportService {
             $violationsRules = $this->baseConfigInterface->getItemRulesIsValid($item);
 
             if ($violationsRules->count() > 0) {
-                $arrayMissingItems[$countMissingItems]['row'] = $row + 2;
-
-                /** @var ConstraintViolation $error */
-
-                foreach ($this->baseConfigInterface->getItemRulesIsValid($item) as $key => $rule) {
-                    $arrayMissingItems[$countMissingItems]['rules'][$key]['column'] = preg_replace('/\[|]/','', $error->getPropertyPath());
-                    $arrayMissingItems[$countMissingItems]['rules'][$key]['message'] = $rule->getMessage();
-                }
+                $arrayMissingItems[$countMissingItems] = $this->resultBuilder($violationsRules, 'rules', $row);
 
                 $countMissingItems++;
 
@@ -163,5 +150,24 @@ class GeneralImportService {
             'code' => ErrorRepository::CODE_UNSUITED_ITEM,
             'message' => $unsuited
         ]);
+    }
+
+    /**
+     * @param ConstraintViolationListInterface $violations
+     * @param string $validType
+     * @param int $row
+     *
+     * @return array
+     */
+    private function resultBuilder(ConstraintViolationListInterface $violations, string $validType, int $row): array {
+        $resultArray['row'] = $row + 2;
+        /** @var ConstraintViolation $error */
+
+        foreach ($violations as $key => $error) {
+            $resultArray[$validType][$key]['column'] = preg_replace('/\[|]/', '', $error->getPropertyPath());
+            $resultArray[$validType][$key]['message'] = $error->getMessage();
+        }
+
+        return $resultArray;
     }
 }
